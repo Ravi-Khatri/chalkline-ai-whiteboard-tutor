@@ -107,6 +107,21 @@ export async function countLesson(env: UsageEnv, request: Request): Promise<void
   await env.CACHE.put(key, String(used + 1), { expirationTtl: DAY_TTL });
 }
 
+/**
+ * Per-visitor daily allowance for follow-up questions, so a script cannot spend
+ * the whole free AI allowance by asking thousands of questions.
+ * Returns false (and does not count) when the visitor is over the limit.
+ */
+export async function takeQuestion(env: UsageEnv & { FAIR_USE_QUESTIONS?: string }, request: Request): Promise<boolean> {
+  if (!env.CACHE) return true;
+  const limit = Number(env.FAIR_USE_QUESTIONS) || 40;
+  const key = (await visitorKey(request)).replace('fair:', 'fairq:');
+  const used = Number(await env.CACHE.get(key)) || 0;
+  if (used >= limit) return false;
+  await env.CACHE.put(key, String(used + 1), { expirationTtl: DAY_TTL });
+  return true;
+}
+
 // ---------------------------------------------------------------------------
 // Cache
 // ---------------------------------------------------------------------------

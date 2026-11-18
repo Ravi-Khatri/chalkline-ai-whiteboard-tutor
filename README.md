@@ -203,6 +203,17 @@ Because KV is eventually consistent, the spend counter is a soft estimate, not a
 
 **Reaching 50+ new lessons a day.** Almost all of the remaining cost is the lesson-writing model (Llama 3.3 70B, ~700 units per lesson). Cheaper Workers AI models (Gemma 4 26B, Qwen3 30B, Llama 3.1 8B) cost ~110–130 units per lesson by Cloudflare's price list, which would allow ~55–65 lessons a day. Switching is one line (`LESSON_MODEL` in `wrangler.jsonc`), and `scripts/bench-models.mjs` measures real cost and lesson quality per model. I kept Llama 3.3 70B for the submission because it is the model whose lessons I could verify; the benchmark could not be run before the deadline because the daily allowance was already spent. When the cloud allowance does run out, learners can still use sample lessons, cached lessons, or **on-device mode** (5c), which has no daily limit.
 
+### Security and privacy
+
+- **No secrets anywhere.** Workers AI is reached through a Cloudflare binding, so there is no API key to leak. The full git history was scanned for keys and credentials (none found), and GitHub secret scanning and push protection are on.
+- **Model output is never executed or injected as HTML.** Lessons are parsed into a fixed set of drawing actions, validated and clamped (`shared/validate.ts`), and rendered as text and SVG through React, so a prompt-injected topic cannot run script on the page.
+- **Input limits.** Request bodies are size-capped (oversized requests get 413), topics are limited to 120 characters and questions to 500, and narration text is cleaned before speech synthesis.
+- **Abuse limits.** Per-visitor daily limits on new lessons (3) and questions (40), plus caching, stop one person from spending the shared free AI allowance. The API sends no CORS headers, so other websites cannot call it from a visitor's browser.
+- **Security headers** (`public/_headers`): `frame-ancestors 'none'` and `X-Frame-Options: DENY` (no clickjacking), `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, a Permissions-Policy denying camera, microphone and location, and HSTS.
+- **Privacy.** No accounts and no personal data. Fair-use counters store only a salted, daily hash of the IP address; questions and learner drawings are not stored. On-device mode sends nothing to an AI service.
+- **Dependencies.** `npm audit --omit=dev` reports 0 vulnerabilities in shipped code. `npm audit` reports a ReDoS advisory in `picomatch` (GHSA-fc5q-39xc-vjpf), which is used only by the build and test tools (Vite, Vitest) for file-path matching; it is not shipped, cannot be reached with external input, and has no patched release yet.
+- **Known gaps.** The text-to-speech endpoint has no per-visitor limit (MeloTTS is cheap, so abuse can use but not easily exhaust the allowance); the daily IP-hash salt is not secret; KV counters are eventually consistent, so limits are approximate; there is no full Content-Security-Policy for scripts yet, because on-device mode loads model code from Hugging Face and GitHub.
+
 ## 8. What I'd do next
 
 1. **Stream the lesson.** Play step 1 as soon as it is ready while the rest are written.

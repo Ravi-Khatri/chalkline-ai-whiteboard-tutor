@@ -23,6 +23,7 @@ import {
   putCachedLesson,
   recordSpend,
   spentToday,
+  takeQuestion,
   textNeurons,
   voiceTier,
   type UsageEnv,
@@ -52,7 +53,7 @@ const LEVELS: Level[] = ['beginner', 'intermediate', 'advanced'];
 function json(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
+    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' },
   });
 }
 
@@ -345,6 +346,9 @@ function parseAsk(body: Record<string, unknown>): AskRequest {
 
 async function handleAsk(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   const req = parseAsk(await readJson(request));
+  if (!(await takeQuestion(env, request))) {
+    throw new HttpError(429, 'limit', 'To share the free AI allowance fairly, each visitor can ask 40 questions a day. Please come back tomorrow.');
+  }
   let raw: unknown;
   try {
     raw = await runJson(env, env.LESSON_MODEL, askMessages(req), askSchema, 400);

@@ -10,6 +10,7 @@ import {
   putCachedLesson,
   recordSpend,
   spentToday,
+  takeQuestion,
   voiceTier,
   type UsageEnv,
 } from '../worker/usage.ts';
@@ -56,6 +57,18 @@ describe('fair use', () => {
     await countLesson(env, req('1.1.1.1'));
     expect(await lessonsLeft(env, req('1.1.1.1'))).toBe(0);
     expect(await lessonsLeft(env, req('2.2.2.2'))).toBe(2);
+  });
+});
+
+describe('question fair use', () => {
+  it('allows a set number of questions per visitor per day', async () => {
+    const env = { CACHE: memoryKV(), FAIR_USE_QUESTIONS: '2' };
+    expect(await takeQuestion(env, req('9.9.9.9'))).toBe(true);
+    expect(await takeQuestion(env, req('9.9.9.9'))).toBe(true);
+    expect(await takeQuestion(env, req('9.9.9.9'))).toBe(false);
+    expect(await takeQuestion(env, req('8.8.8.8'))).toBe(true);
+    // Questions and lessons are counted separately.
+    expect(await lessonsLeft(env, req('9.9.9.9'))).toBe(3);
   });
 });
 
