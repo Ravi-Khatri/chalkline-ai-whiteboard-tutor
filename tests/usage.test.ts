@@ -1,11 +1,13 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import {
   audioKey,
-  countLesson,
   getCachedAudio,
   getCachedLesson,
   lessonKey,
   lessonsLeft,
+  normaliseTopic,
+  refundLesson,
+  reserveLesson,
   putCachedAudio,
   putCachedLesson,
   recordSpend,
@@ -53,10 +55,27 @@ describe('fair use', () => {
   it('limits new lessons per visitor and counts visitors separately', async () => {
     const env: UsageEnv = { CACHE: memoryKV(), FAIR_USE_LESSONS: '2' };
     expect(await lessonsLeft(env, req('1.1.1.1'))).toBe(2);
-    await countLesson(env, req('1.1.1.1'));
-    await countLesson(env, req('1.1.1.1'));
+    expect(await reserveLesson(env, req('1.1.1.1'))).toBe(true);
+    expect(await reserveLesson(env, req('1.1.1.1'))).toBe(true);
+    expect(await reserveLesson(env, req('1.1.1.1'))).toBe(false); // reserved up front, so a third is refused
     expect(await lessonsLeft(env, req('1.1.1.1'))).toBe(0);
     expect(await lessonsLeft(env, req('2.2.2.2'))).toBe(2);
+  });
+
+  it('refunds a reserved lesson when generation fails', async () => {
+    const env: UsageEnv = { CACHE: memoryKV(), FAIR_USE_LESSONS: '1' };
+    expect(await reserveLesson(env, req('3.3.3.3'))).toBe(true);
+    await refundLesson(env, req('3.3.3.3'));
+    expect(await lessonsLeft(env, req('3.3.3.3'))).toBe(1);
+  });
+
+  it('fails open when KV is unavailable, instead of breaking the request', async () => {
+    const broken = { get: async () => { throw new Error('KV down'); }, put: async () => { throw new Error('KV write limit'); } } as unknown as KVNamespace;
+    const env = { CACHE: broken };
+    expect(await takeQuestion(env, req('4.4.4.4'))).toBe(true);
+    expect(await reserveLesson(env, req('4.4.4.4'))).toBe(true);
+    await expect(recordSpend(env, 100)).resolves.toBeUndefined();
+    expect(await getCachedLesson(env, 'k')).toBeNull();
   });
 });
 
@@ -73,9 +92,19 @@ describe('question fair use', () => {
 });
 
 describe('cache', () => {
-  it('normalises topics so trivial differences share one lesson', () => {
-    expect(lessonKey('  How Binary-Search works? ', 'beginner')).toBe(lessonKey('how binary search works', 'beginner'));
-    expect(lessonKey('photosynthesis', 'beginner')).not.toBe(lessonKey('photosynthesis', 'advanced'));
+  it('normalises topics so trivial differences share one lesson', async () => {
+    expect(await lessonKey('  How Binary-Search works? ', 'beginner', 'm')).toBe(await lessonKey('how binary search works', 'beginner', 'm'));
+    expect(await lessonKey('photosynthesis', 'beginner', 'm')).not.toBe(await lessonKey('photosynthesis', 'advanced', 'm'));
+    expect(await lessonKey('photosynthesis', 'beginner', 'm1')).not.toBe(await lessonKey('photosynthesis', 'beginner', 'm2'));
+  });
+
+  it('keeps different topics apart, including symbols and non-Latin scripts', async () => {
+    const key = (t: string) => lessonKey(t, 'beginner', 'm');
+    expect(await key('C++ pointers')).not.toBe(await key('C# pointers'));
+    expect(await key('光合作用')).not.toBe(await key('日本の歴史'));
+    expect(normaliseTopic('Fotosíntesis')).toBe('fotosíntesis');
+    expect(normaliseTopic('光合作用')).toBe('光合作用');
+    expect(await key('!!!')).not.toBe(await key('???')); // symbol-only topics never share an empty key
   });
 
   it('round-trips lessons and audio', async () => {

@@ -21,13 +21,20 @@ export function beatTexts(lesson: Lesson): string[] {
   return lesson.steps.flatMap((s) => s.beats.map((b) => b.say));
 }
 
-async function mapLimit<T, R>(items: T[], limit: number, fn: (item: T, i: number) => Promise<R>): Promise<R[]> {
+/** Runs fn over items with at most `limit` in flight. After the first failure no new items start (saves AI quota). */
+export async function mapLimit<T, R>(items: T[], limit: number, fn: (item: T, i: number) => Promise<R>): Promise<R[]> {
   const out: R[] = new Array(items.length);
   let next = 0;
+  let failed = false;
   const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
-    while (next < items.length) {
+    while (next < items.length && !failed) {
       const i = next++;
-      out[i] = await fn(items[i], i);
+      try {
+        out[i] = await fn(items[i], i);
+      } catch (err) {
+        failed = true;
+        throw err;
+      }
     }
   });
   await Promise.all(workers);
@@ -96,23 +103,43 @@ export async function prepareNarration(
   }
 }
 
-/** Speaks a tutor answer at the learner's chosen speed. Returns a function that stops it. */
+/**
+ * Speaks a tutor answer at the learner's chosen speed. Returns a function that
+ * stops it. Aborting `signal` (e.g. the learner resumed the lesson) cancels it
+ * at any point, including while its audio is still being fetched.
+ */
 export async function speakAnswer(text: string, rate: number, signal: AbortSignal, tier: VoiceTier = 'premium'): Promise<() => void> {
+  const noop = () => {};
+  if (signal.aborted) return noop;
   try {
     const bytes = await synthesize(text, signal, tier);
+    if (signal.aborted) return noop;
     const url = URL.createObjectURL(new Blob([bytes]));
     const audio = new Audio(url);
     audio.preservesPitch = true;
     audio.playbackRate = rate;
-    audio.addEventListener('ended', () => URL.revokeObjectURL(url));
+    let released = false;
+    const stop = () => {
+      audio.pause();
+      if (!released) {
+        released = true;
+        URL.revokeObjectURL(url); // free the clip whether it finished, was stopped or failed
+      }
+    };
+    audio.addEventListener('ended', stop);
+    audio.addEventListener('error', stop);
+    signal.addEventListener('abort', stop, { once: true });
     await audio.play();
-    return () => audio.pause();
+    return stop;
   } catch (err) {
-    if ((err as Error).name === 'AbortError') return () => {};
-    if (!('speechSynthesis' in window)) return () => {};
+    if ((err as Error).name === 'AbortError' || signal.aborted) return noop;
+    if (!('speechSynthesis' in window)) return noop;
     const u = new SpeechSynthesisUtterance(text);
+    u.rate = rate;
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(u);
-    return () => window.speechSynthesis.cancel();
+    const cancel = () => window.speechSynthesis.cancel();
+    signal.addEventListener('abort', cancel, { once: true });
+    return cancel;
   }
 }

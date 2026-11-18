@@ -22,6 +22,8 @@ export interface Clock {
   pause(): void;
   seek(t: number): void;
   dispose(): void;
+  /** Frees large resources once the lesson is closed for good (optional). */
+  release?(): void;
   onEnded?: () => void;
 }
 
@@ -56,9 +58,12 @@ export class AudioClock implements Clock {
   }
 
   play() {
+    if (this.released) return;
     if (this.audio.ended || this.audio.currentTime >= this.duration - 0.05) this.audio.currentTime = 0;
     this.audio.playbackRate = this.rate;
-    void this.audio.play().catch(() => this.onEnded?.());
+    // If the browser refuses playback (e.g. autoplay policy) the element simply
+    // stays paused; the UI reads `playing` and shows the play button again.
+    void this.audio.play().catch((err) => console.warn('Narration playback was blocked', err));
   }
 
   pause() {
@@ -81,8 +86,23 @@ export class AudioClock implements Clock {
 
   dispose() {
     // Only pause: React StrictMode (development) runs cleanup and then reuses
-    // the same clock, so the element must stay usable.
+    // the same clock, so the element must stay usable. release() frees memory.
     this.audio.pause();
+  }
+
+  private released = false;
+
+  /**
+   * Frees the merged narration (a 2-minute lesson is ~10–15 MB of WAV). Called
+   * by the app when the learner leaves the lesson, after which the clock is unusable.
+   */
+  release() {
+    if (this.released) return;
+    this.released = true;
+    this.audio.pause();
+    this.audio.removeAttribute('src');
+    this.audio.load();
+    URL.revokeObjectURL(this.url);
   }
 }
 

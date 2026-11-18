@@ -2,7 +2,7 @@
 // are served by Workers Static Assets; only /api/* reaches this code.
 //
 //   POST /api/lesson  { topic, level }        -> Lesson JSON (Workers AI, Llama 3.3 70B)
-//   POST /api/tts     { text, voice? }        -> audio/mpeg  (Workers AI, Aura-2; WAV if MeloTTS is configured)
+//   POST /api/tts     { text, tier?, voice? } -> audio     (Workers AI: MeloTTS WAV by default, Aura-2 MP3 if configured)
 //   POST /api/ask     AskRequest              -> { answer, highlight }
 //   GET  /api/health                          -> configured models
 
@@ -14,11 +14,12 @@ import { assembleRawLesson, checkOutline, extractJson, stripThinking } from '../
 import {
   audioKey,
   COST,
-  countLesson,
   getCachedAudio,
   getCachedLesson,
   lessonKey,
   lessonsLeft,
+  refundLesson,
+  reserveLesson,
   putCachedAudio,
   putCachedLesson,
   recordSpend,
@@ -57,9 +58,27 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
+/**
+ * Rejects requests a browser marks as coming from another website. Requiring
+ * Content-Type application/json also forces a CORS preflight for cross-site
+ * browser calls, which this API never approves, so other sites cannot make a
+ * visitor's browser spend the AI allowance ("simple" text/plain POSTs fail here).
+ */
+function assertSameSiteJson(request: Request) {
+  const site = request.headers.get('sec-fetch-site');
+  if (site === 'cross-site') throw new HttpError(403, 'bad_request', 'Cross-site requests are not allowed.');
+  const type = request.headers.get('content-type') ?? '';
+  if (!type.toLowerCase().startsWith('application/json')) {
+    throw new HttpError(415, 'bad_request', 'Requests must be sent as JSON (Content-Type: application/json).');
+  }
+}
+
 async function readJson(request: Request, maxBytes = 16_000): Promise<Record<string, unknown>> {
+  assertSameSiteJson(request);
+  // Check the declared size first so oversized bodies are not buffered at all.
+  if (Number(request.headers.get('content-length')) > maxBytes) throw new HttpError(413, 'bad_request', 'Request is too large.');
   const text = await request.text();
-  if (text.length > maxBytes) throw new HttpError(413, 'bad_request', 'Request is too large.');
+  if (new TextEncoder().encode(text).length > maxBytes) throw new HttpError(413, 'bad_request', 'Request is too large.');
   try {
     const body = JSON.parse(text);
     if (typeof body !== 'object' || body === null) throw new Error();
@@ -183,17 +202,33 @@ async function handleLesson(request: Request, env: Env, ctx: ExecutionContext): 
   env = { ...env, meter: { in: 0, out: 0 } };
 
   // Same topic, level and model already generated (by anyone): serve it at zero AI cost.
-  const cacheKey = `${lessonKey(topic, level)}:${model}`;
+  const cacheKey = await lessonKey(topic, level, model);
   const cached = benchmarking ? null : await getCachedLesson<Lesson>(env, cacheKey);
   if (cached) return json({ ...cached, id: `${cached.id}-c${Date.now().toString(36)}`, cached: true });
 
-  if (!benchmarking && (await lessonsLeft(env, request)) <= 0) {
+  // Reserve one of the visitor's lessons before generating (refunded below if generation fails).
+  if (!benchmarking && !(await reserveLesson(env, request))) {
     throw new HttpError(
       429,
       'limit',
       `To share the free AI allowance fairly, each visitor can create ${env.FAIR_USE_LESSONS ?? 3} new lessons a day. Try a ready-made lesson or one of the suggested topics: those are free.`,
     );
   }
+  try {
+    return await generateLesson(env, ctx, { topic, level, model, cacheKey, benchmarking });
+  } catch (err) {
+    // A failed generation still spent AI calls: record that, and give the visitor their lesson back.
+    const spent = textNeurons(model, env.meter!) ?? 0;
+    ctx.waitUntil(Promise.all([recordSpend(env, spent), benchmarking ? null : refundLesson(env, request)]).catch(() => {}));
+    throw err;
+  }
+}
+
+async function generateLesson(
+  env: Env,
+  ctx: ExecutionContext,
+  { topic, level, model, cacheKey, benchmarking }: { topic: string; level: Level; model: string; cacheKey: string; benchmarking: boolean },
+): Promise<Response> {
   const started = Date.now();
 
   let outline: Outline;
@@ -233,7 +268,6 @@ async function handleLesson(request: Request, env: Env, ctx: ExecutionContext): 
     ctx.waitUntil(
       Promise.all([
         recordSpend(env, textCost + narration),
-        benchmarking ? null : countLesson(env, request),
         benchmarking ? null : putCachedLesson(env, cacheKey, lesson),
       ]).catch((e) => console.warn('usage bookkeeping failed', String(e))),
     );

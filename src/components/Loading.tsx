@@ -45,7 +45,7 @@ export function Loading({ state, onCancel }: { state: LoadingState; onCancel: ()
   return (
     <main className="loading" aria-busy="true">
       <div className="loading-card">
-        <p className="eyebrow">
+        <p className="kicker">
           Preparing your lesson{device ? ' on your device' : ''} · {elapsed}s
         </p>
         <h1>{state.label}</h1>

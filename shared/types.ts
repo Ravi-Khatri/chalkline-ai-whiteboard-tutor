@@ -83,7 +83,7 @@ export interface Lesson {
   model?: string;
   /** Sample lessons only: file extension of the stored narration clips. */
   audio?: 'wav' | 'mp3';
-  /** Narration voice: 'premium' (Aura-2) or 'economy' (MeloTTS, used once the day's budget is spent). */
+  /** Narration voice: 'premium' (Aura-2) or 'economy' (MeloTTS: the default, and the fallback once an Aura-2 budget is spent). */
   voiceTier?: VoiceTier;
   /** True when served from the topic cache (generated earlier for someone else). */
   cached?: boolean;

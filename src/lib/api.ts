@@ -59,8 +59,8 @@ export async function listSamples(): Promise<SampleInfo[]> {
   return res.json();
 }
 
-export async function loadSample(id: string): Promise<Lesson> {
-  const res = await fetch(`/samples/${id}/lesson.json`);
+export async function loadSample(id: string, signal?: AbortSignal): Promise<Lesson> {
+  const res = await fetch(`/samples/${id}/lesson.json`, { signal });
   if (!res.ok) throw new ApiFailure('Sample lesson not found.', 'not_found', res.status);
   return res.json();
 }

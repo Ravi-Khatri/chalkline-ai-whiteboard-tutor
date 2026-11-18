@@ -6,7 +6,7 @@
 import { chromium } from 'playwright-core';
 import { mkdir } from 'node:fs/promises';
 
-const base = process.argv[2] ?? 'http://localhost:5180';
+const base = process.argv[2] ?? 'http://localhost:5173';
 const out = process.argv[3] ?? 'smoke-shots';
 await mkdir(out, { recursive: true });
 
@@ -118,6 +118,10 @@ await page.getByRole('tab', { name: /Quiz/ }).click();
 const qs = await page.locator('.quiz-q').count();
 check(qs > 0, `quiz shows ${qs} questions`);
 await page.locator('.quiz-q').first().locator('.quiz-opt').first().click();
+// Answers must survive switching to another tab and back.
+await page.getByRole('tab', { name: /Transcript/ }).click();
+await page.getByRole('tab', { name: /Quiz/ }).click();
+check((await page.locator('.quiz-feedback').count()) === 1, 'quiz answers survive switching tabs');
 await page.screenshot({ path: `${out}/5-quiz.png` });
 
 // Learner pen: draw a loop around the middle of the board, then ask about it.
@@ -144,6 +148,10 @@ await page.waitForTimeout(300);
 await page.screenshot({ path: `${out}/7-mobile.png`, fullPage: true });
 const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
 check(!overflow, 'no horizontal scroll at 390px');
+await page.goto(base);
+await page.waitForTimeout(800);
+const homeOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
+check(!homeOverflow, 'home page has no horizontal scroll at 390px');
 
 check(errors.length === 0, `no console errors${errors.length ? `: ${errors.join(' | ')}` : ''}`);
 await browser.close();

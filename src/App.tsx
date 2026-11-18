@@ -37,25 +37,44 @@ export function App() {
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
+  // The open lesson's narration holds ~10–15 MB of audio; free it whenever the learner leaves.
+  const openNarration = useRef<PreparedNarration | null>(null);
+  const releaseLesson = () => {
+    openNarration.current?.clock.release?.();
+    openNarration.current = null;
+  };
+  const goHome = () => {
+    abortRef.current?.abort();
+    releaseLesson();
+    setPhase({ name: 'home' });
+  };
+
   const run = async (label: string, topic: string, getLesson: (signal: AbortSignal) => Promise<Lesson>, mode: AiMode = 'cloud', level?: Level) => {
     const ctx = audioContext();
     abortRef.current?.abort();
+    releaseLesson();
     const ac = new AbortController();
     abortRef.current = ac;
     const startedAt = Date.now();
     setPhase({ name: 'loading', label, stage: mode === 'device' ? 'model' : 'writing', done: 0, total: 0, startedAt, mode });
     try {
       const lesson = await getLesson(ac.signal);
+      // Cancelled while loading (some loaders ignore the signal): don't resurrect the loading screen.
+      if (ac.signal.aborted) return;
       setPhase({ name: 'loading', label: lesson.title, stage: 'voicing', done: 0, total: 0, startedAt, mode, outline: lesson.steps.map((s) => s.title) });
       const narration = await prepareNarration(lesson, ctx, {
         signal: ac.signal,
         onProgress: (done, total) =>
           setPhase((p) => (p.name === 'loading' ? { ...p, done, total } : p)),
       });
-      if (ac.signal.aborted) return;
+      if (ac.signal.aborted) {
+        narration.clock.release?.();
+        return;
+      }
+      openNarration.current = narration;
       setPhase({ name: 'lesson', lesson, narration });
     } catch (err) {
-      if ((err as Error).name === 'AbortError') return;
+      if ((err as Error | null)?.name === 'AbortError' || ac.signal.aborted) return;
       let message = err instanceof ApiFailure ? err.message : 'Something went wrong while preparing the lesson. Please try again.';
       if (err instanceof ApiFailure && err.code === 'quota') message = quotaMessage();
       if (mode === 'device') {
@@ -93,12 +112,9 @@ export function App() {
         )
       : run(topic, topic, (signal) => generateLesson(topic, level, signal), 'cloud', level);
 
-  const startSample = (id: string) => run('Sample lesson', '', () => loadSample(id));
+  const startSample = (id: string) => run('Sample lesson', '', (signal) => loadSample(id, signal));
 
-  const cancel = () => {
-    abortRef.current?.abort();
-    setPhase({ name: 'home' });
-  };
+  const cancel = goHome;
 
   return (
     <div className="app">
@@ -108,9 +124,9 @@ export function App() {
       <header className={`topbar${phase.name === 'lesson' ? ' in-lesson' : ''}`}>
         <button className="brand" onClick={cancel} aria-label="Chalkline home">
           <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
-            <rect x="2" y="5" width="28" height="20" rx="5" fill="var(--color-primary)" />
+            <rect x="2" y="5" width="28" height="20" rx="5" fill="var(--ink)" />
             <path d="M8 18c3-6 6-6 8-2s5 4 8-3" stroke="#fff" strokeWidth="2.4" fill="none" strokeLinecap="round" />
-            <path d="M12 29h8M16 25v4" stroke="var(--color-primary)" strokeWidth="2.4" strokeLinecap="round" />
+            <path d="M12 29h8M16 25v4" stroke="var(--ink)" strokeWidth="2.4" strokeLinecap="round" />
           </svg>
           <span className="brand-name">Chalkline</span>
         </button>
@@ -118,7 +134,7 @@ export function App() {
         <div id="nav-lesson-slot" className="topbar-center" />
         <div className="topbar-right">
           {phase.name === 'lesson' ? (
-            <button className="btn btn-sm btn-primary" onClick={() => setPhase({ name: 'home' })}>
+            <button className="btn btn-sm btn-primary" onClick={goHome}>
               <Plus width={16} height={16} /> <span className="hide-sm">New lesson</span>
             </button>
           ) : (
@@ -144,7 +160,7 @@ export function App() {
         )}
         {phase.name === 'loading' && <Loading state={phase} onCancel={cancel} />}
         {phase.name === 'lesson' && (
-          <LessonView key={phase.lesson.id} lesson={phase.lesson} narration={phase.narration} onExit={() => setPhase({ name: 'home' })} />
+          <LessonView key={phase.lesson.id} lesson={phase.lesson} narration={phase.narration} onExit={goHome} />
         )}
       </div>
     </div>

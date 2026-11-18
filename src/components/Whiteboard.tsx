@@ -10,7 +10,7 @@ import type { BoardFrame, ConnectorItem, RenderItem, ShapeItem } from '../../sha
 
 const S = 10; // board units -> SVG pixels
 export const INK: Record<Color, string> = {
-  ink: '#1e1b4b',
+  ink: '#1c1b29',
   blue: '#1d4ed8',
   red: '#c2410c',
   green: '#15803d',
@@ -207,7 +207,9 @@ function Graph({ item, color }: { item: Extract<RenderItem, { kind: 'graph' }>; 
     ...roughPaths(`${item.key}:ax:${w},${h}`, (o) => gen.line(px0 * S, py1 * S, px1 * S, py1 * S, { ...o, roughness: 0.6 }), INK.ink, 2),
     ...roughPaths(`${item.key}:ay:${w},${h}`, (o) => gen.line(px0 * S, py1 * S, px0 * S, py0 * S, { ...o, roughness: 0.6 }), INK.ink, 2),
   ];
-  const curve = roughPaths(`${item.key}:c:${w},${h}`, (o) => gen.linearPath(item.points.map(pt), { ...o, roughness: 0.8 }), color, 3);
+  // The data points are part of the cache key: two lessons can reuse the same graph id and size.
+  const dataKey = item.points.map(([x, y]) => `${x.toFixed(4)},${y.toFixed(4)}`).join(';');
+  const curve = roughPaths(`${item.key}:c:${w},${h}:${dataKey}`, (o) => gen.linearPath(item.points.map(pt), { ...o, roughness: 0.8 }), color, 3);
   const pAxes = Math.min(1, item.progress / 0.3);
   const pCurve = Math.max(0, (item.progress - 0.3) / 0.7);
   const fmtN = (v: number) => (Math.abs(v) >= 1000 ? `${+(v / 1000).toFixed(1)}k` : `${+v.toFixed(2)}`);

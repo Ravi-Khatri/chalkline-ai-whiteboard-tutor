@@ -4,9 +4,9 @@
 //   node scripts/make-samples.mjs                 # all samples below
 //   node scripts/make-samples.mjs binary-search   # just one
 //
-// Output: public/samples/<id>/lesson.json, one <beatId>.wav per spoken beat,
-// and public/samples/index.json. Audio is downsampled to 22.05 kHz mono to
-// halve the download size.
+// Output: public/samples/<id>/lesson.json, one audio clip per spoken beat
+// (<beatId>.mp3 with Aura-2, or <beatId>.wav downsampled to 22.05 kHz mono with
+// MeloTTS), and public/samples/index.json. --revoice re-records existing lessons.
 
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { join } from 'node:path';

@@ -1,6 +1,6 @@
 ﻿// On-device AI: writes lessons and answers questions with an open-source model
 // running in the learner's browser (WebLLM, Apache-2.0, via WebGPU). No API key,
-// no AI service and no daily limit. Used when the learner chooses "My device",
+// no daily limit (narration still uses the cloud voice when available). Used when the learner chooses "My device",
 // or when the free cloud allowance has run out.
 //
 // It reuses the exact prompts, line-format parser and validator of the cloud

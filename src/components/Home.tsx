@@ -3,7 +3,8 @@ import type { Level } from '../../shared/types.ts';
 import { listSamples, type SampleInfo } from '../lib/api.ts';
 import { DEFAULT_DEVICE_MODEL, DEVICE_MODELS, deviceSupport, isModelDownloaded } from '../lib/deviceAI.ts';
 import type { AiMode } from '../App.tsx';
-import { Board, Chat, Chip, Play, Quiz, Sparkle } from './Icons.tsx';
+import { Board, Chat, Chip, Play, Quiz } from './Icons.tsx';
+import { INK } from './Whiteboard.tsx';
 
 const SUGGESTIONS = ['How binary search works', 'Why the sky is blue', 'Photosynthesis', 'Compound interest', 'How vaccines train the immune system', 'Pythagoras theorem'];
 const LEVELS: { id: Level; label: string }[] = [
@@ -59,88 +60,103 @@ export function Home({
   return (
     <main className="home">
       <section className="hero">
-        <p className="eyebrow">
-          <Sparkle width={16} height={16} /> AI whiteboard tutor
-        </p>
-        <h1>
-          Learn anything the way a good teacher explains it: <span className="hl">out loud, at a whiteboard.</span>
-        </h1>
-        <p className="lede">
-          Type a topic. Chalkline plans a two-minute lesson, draws it step by step while it talks, and stops to answer your questions about anything on the board.
-        </p>
+        <div className="hero-copy">
+          <p className="kicker">AI whiteboard tutor</p>
+          <h1>
+            Understand anything in two minutes, <em>explained at a whiteboard.</em>
+          </h1>
+          <p className="lede">Type a topic. Chalkline talks you through it while it draws, and stops to answer questions about anything on the board.</p>
 
-        <form className="topic-form" onSubmit={submit} noValidate>
-          <label htmlFor="topic" className="field-label">
-            What do you want to understand?
-          </label>
-          <div className="topic-row">
-            <input
-              id="topic"
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="e.g. How does binary search work?"
-              maxLength={120}
-              autoComplete="off"
-              aria-invalid={touched && tooShort}
-              aria-describedby={touched && tooShort ? 'topic-error' : error ? 'start-error' : undefined}
-            />
-            <button className="btn btn-primary btn-lg" type="submit">
-              <Play width={18} height={18} /> Teach me
-            </button>
-          </div>
-          {touched && tooShort && (
-            <p id="topic-error" className="field-error">
-              Enter a topic of at least 2 characters.
-            </p>
-          )}
-          {error && (
-            <div id="start-error" className="field-error" role="alert">
-              <p>{error}</p>
-              {(errorCode === 'quota' || errorCode === 'limit') && support?.ok && !tooShort && (
-                <button type="button" className="btn device-cta" onClick={() => onStart(topic.trim(), level, 'device', deviceModel)}>
-                  <Chip width={18} height={18} /> Write it on my device instead (open-source model, no daily limit)
-                </button>
-              )}
-            </div>
-          )}
-
-          <div className="level" role="radiogroup" aria-label="Your level">
-            {LEVELS.map((l) => (
-              <button
-                type="button"
-                key={l.id}
-                role="radio"
-                aria-checked={level === l.id}
-                className={`seg${level === l.id ? ' is-on' : ''}`}
-                onClick={() => setLevel(l.id)}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
-
-          <fieldset className="ai-where">
-            <legend className="field-label">Where should the AI run?</legend>
-            <div className="level" role="radiogroup" aria-label="Where the AI runs">
-              <button type="button" role="radio" aria-checked={mode === 'cloud'} className={`seg${mode === 'cloud' ? ' is-on' : ''}`} onClick={() => setMode('cloud')}>
-                Cloud · best quality
-              </button>
-              <button
-                type="button"
-                role="radio"
-                aria-checked={mode === 'device'}
-                className={`seg${mode === 'device' ? ' is-on' : ''}`}
-                onClick={() => setMode('device')}
-                disabled={support !== null && !support.ok}
-              >
-                My device · private, no limit
+          <form className="topic-form" onSubmit={submit} noValidate>
+            <label htmlFor="topic" className="sr-only">
+              What do you want to understand?
+            </label>
+            <div className={`prompt${touched && tooShort ? ' is-invalid' : ''}`}>
+              <input
+                id="topic"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                placeholder="What do you want to understand?"
+                maxLength={120}
+                autoComplete="off"
+                aria-invalid={touched && tooShort}
+                aria-describedby={touched && tooShort ? 'topic-error' : error ? 'start-error' : undefined}
+              />
+              <button className="btn btn-primary" type="submit">
+                <Play width={16} height={16} /> Teach me
               </button>
             </div>
-            {support && !support.ok && <p className="muted small">On-device mode isn't available here: {support.reason}</p>}
+            {touched && tooShort && (
+              <p id="topic-error" className="field-error">
+                Enter a topic of at least 2 characters.
+              </p>
+            )}
+            {error && (
+              <div id="start-error" className="field-error" role="alert">
+                <p>{error}</p>
+                {(errorCode === 'quota' || errorCode === 'limit') && support?.ok && !tooShort && (
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => onStart(topic.trim(), level, 'device', deviceModel)}>
+                    <Chip width={16} height={16} /> Write it on my device instead
+                  </button>
+                )}
+              </div>
+            )}
+
+            <div className="options">
+              <div className="option">
+                <span className="option-label" id="level-label">
+                  Level
+                </span>
+                <div className="segmented" role="radiogroup" aria-labelledby="level-label">
+                  {LEVELS.map((l) => (
+                    <button
+                      type="button"
+                      key={l.id}
+                      role="radio"
+                      aria-checked={level === l.id}
+                      className={`seg${level === l.id ? ' is-on' : ''}`}
+                      onClick={() => setLevel(l.id)}
+                    >
+                      {l.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="option">
+                <span className="option-label" id="where-label">
+                  AI runs on
+                </span>
+                <div className="segmented" role="radiogroup" aria-labelledby="where-label">
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={mode === 'cloud'}
+                    className={`seg${mode === 'cloud' ? ' is-on' : ''}`}
+                    onClick={() => setMode('cloud')}
+                    title="Cloudflare Workers AI: best lesson quality, limited free daily allowance"
+                  >
+                    Cloud
+                  </button>
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={mode === 'device'}
+                    className={`seg${mode === 'device' ? ' is-on' : ''}`}
+                    onClick={() => setMode('device')}
+                    disabled={support !== null && !support.ok}
+                    title="An open-source model in your browser: no daily limit"
+                  >
+                    My device
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {support && !support.ok && <p className="hint">On-device mode isn't available here: {support.reason}</p>}
             {mode === 'device' && support?.ok && (
               <div className="device-panel">
-                <label className="small">
-                  Open-source model:{' '}
+                <label>
+                  <span className="option-label">Open-source model</span>
                   <select value={deviceModel} onChange={(e) => setDeviceModel(e.target.value)}>
                     {DEVICE_MODELS.map((m) => (
                       <option key={m.id} value={m.id}>
@@ -149,41 +165,42 @@ export function Home({
                     ))}
                   </select>
                 </label>
-                <p className="muted small">
-                  Runs entirely in your browser with WebLLM (no API key, no AI service, nothing sent to an AI company).{' '}
+                <p className="hint">
+                  The lesson is written by an open-source model running in your browser (WebLLM), with no daily limit. Narration uses the cloud voice when available.{' '}
                   {downloaded
-                    ? 'Already downloaded on this device.'
-                    : `First use downloads ${chosen.download} once (needs ${chosen.memory}). Lessons are simpler than the cloud ones and take 1–3 minutes to write.`}
+                    ? 'The model is already downloaded on this device.'
+                    : `First use downloads ${chosen.download} once (needs ${chosen.memory}). Lessons are simpler than cloud ones and take 1–3 minutes to write.`}
                 </p>
               </div>
             )}
-          </fieldset>
 
-          <div className="suggestions" aria-label="Topic ideas">
-            {SUGGESTIONS.map((s) => (
-              <button type="button" className="chip" key={s} onClick={() => setTopic(s)}>
-                {s}
-              </button>
-            ))}
-          </div>
-          <p className="muted small">
-            Cloud lessons are written by an AI model on Cloudflare Workers AI and take about a minute to prepare. All AI lessons can contain mistakes.
-          </p>
-        </form>
+            <div className="suggestions" aria-label="Topic ideas">
+              {SUGGESTIONS.map((s) => (
+                <button type="button" className="chip" key={s} onClick={() => setTopic(s)}>
+                  {s}
+                </button>
+              ))}
+            </div>
+          </form>
+        </div>
+
+        <BoardPreview />
       </section>
 
       {samples.length > 0 && (
         <section className="samples" aria-labelledby="samples-h">
-          <h2 id="samples-h">Try a ready-made lesson</h2>
-          <p className="muted small">Pre-generated with the same AI pipeline and shipped with the app, so they start instantly. Follow-up questions are still answered live.</p>
+          <div className="section-head">
+            <h2 id="samples-h">Ready-made lessons</h2>
+            <p className="hint">Pre-generated with the same pipeline, so they start instantly. Questions are still answered live.</p>
+          </div>
           <div className="sample-grid">
             {samples.map((s) => (
               <button key={s.id} className="sample-card" onClick={() => onSample(s.id)}>
-                <span className="sample-tag">Sample</span>
-                <strong>{s.title}</strong>
-                <span className="muted small">{s.blurb}</span>
+                <span className="pill">Sample</span>
+                <strong className="sample-title">{s.title}</strong>
+                <span className="sample-blurb">{s.blurb}</span>
                 <span className="sample-go">
-                  <Play width={16} height={16} /> Play
+                  <Play width={16} height={16} /> Play lesson
                 </span>
               </button>
             ))}
@@ -191,28 +208,68 @@ export function Home({
         </section>
       )}
 
-      <section className="how" aria-label="How it works">
-        <div>
-          <Board />
+      <section className="how" aria-labelledby="how-h">
+        <h2 id="how-h" className="sr-only">
+          How it works
+        </h2>
+        <div className="how-item">
+          <Board width={20} height={20} />
           <h3>Voice and drawing in sync</h3>
-          <p className="muted">Each sentence is recorded separately, and its measured length decides exactly when the matching drawing appears.</p>
+          <p>Each sentence is recorded separately, and its measured length decides exactly when its drawing appears.</p>
         </div>
-        <div>
-          <Play />
+        <div className="how-item">
+          <Play width={20} height={20} />
           <h3>Pause, rewind, jump</h3>
-          <p className="muted">The board is recalculated for any moment, so seeking backwards rebuilds the drawing exactly as it was.</p>
+          <p>The board is recalculated for any moment, so seeking backwards rebuilds the drawing exactly.</p>
         </div>
-        <div>
-          <Chat />
-          <h3>Interrupt with questions</h3>
-          <p className="muted">Click something on the board and ask. The tutor answers out loud with the lesson's context, then you resume.</p>
+        <div className="how-item">
+          <Chat width={20} height={20} />
+          <h3>Ask about what you see</h3>
+          <p>Click or circle anything on the board and ask. The tutor answers out loud, then you resume.</p>
         </div>
-        <div>
-          <Quiz />
+        <div className="how-item">
+          <Quiz width={20} height={20} />
           <h3>Check understanding</h3>
-          <p className="muted">Three quick questions at the end. Get one wrong and the tutor explains your specific mistake.</p>
+          <p>Three quick questions at the end; get one wrong and the tutor explains your mistake.</p>
         </div>
       </section>
+
+      <p className="footnote">AI-written lessons can contain mistakes. Cloud lessons take about a minute to prepare.</p>
     </main>
+  );
+}
+
+const ACCENT = '#4f46e5'; // matches --accent
+const MARKER = '#fde68a'; // matches --marker
+
+/** A static, decorative preview of a lesson board, drawn with the same ink palette as real lessons. */
+function BoardPreview() {
+  return (
+    <figure className="board-preview" aria-hidden="true">
+      <svg viewBox="0 0 1000 620">
+        <text x="500" y="78" textAnchor="middle" className="board-text" fontSize="46" fill={INK.ink}>
+          Compound interest
+        </text>
+        <rect x="80" y="190" width="210" height="92" rx="10" fill="none" stroke={INK.ink} strokeWidth="3" />
+        <text x="185" y="248" textAnchor="middle" className="board-text" fontSize="36" fill={INK.ink}>
+          ₹1,000
+        </text>
+        <path d="M300 236 H410 M396 224 l16 12 -16 12" stroke={ACCENT} strokeWidth="3" fill="none" strokeLinecap="round" />
+        <text x="355" y="214" textAnchor="middle" className="board-text" fontSize="26" fill={ACCENT}>
+          +10%
+        </text>
+        <rect x="420" y="190" width="230" height="92" rx="10" fill={MARKER} opacity="0.75" />
+        <rect x="420" y="190" width="230" height="92" rx="10" fill="none" stroke={INK.ink} strokeWidth="3" />
+        <text x="535" y="248" textAnchor="middle" className="board-text" fontSize="36" fill={INK.ink}>
+          ₹1,100
+        </text>
+        <path d="M110 560 H900 M110 560 V350" stroke={INK.ink} strokeWidth="2.5" fill="none" />
+        <path d="M110 545 C 360 525, 610 470, 900 360" stroke={INK.green} strokeWidth="4" fill="none" strokeLinecap="round" />
+        <text x="770" y="342" className="board-text" fontSize="28" fill={INK.green}>
+          after 10 years
+        </text>
+      </svg>
+      <figcaption className="board-preview-cap">A lesson draws itself while the tutor speaks</figcaption>
+    </figure>
   );
 }

@@ -62,7 +62,7 @@ export function AskPanel({
       <div className="ask-log" ref={listRef} aria-live="polite">
         {messages.length === 0 && (
           <div className="ask-empty">
-            <Sparkle width={22} height={22} />
+            <Sparkle width={20} height={20} />
             <p>
               Ask anything about what you're seeing. The lesson pauses, the tutor answers out loud, and you carry on from the same moment.
             </p>

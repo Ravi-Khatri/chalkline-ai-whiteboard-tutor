@@ -6,7 +6,7 @@
 import { chromium } from 'playwright-core';
 import { mkdir } from 'node:fs/promises';
 
-const base = process.argv[2] ?? 'http://localhost:5180';
+const base = process.argv[2] ?? 'http://localhost:5173';
 const out = process.argv[3] ?? 'smoke-device-shots';
 const model = process.env.MODEL ?? 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
 const topic = process.env.TOPIC ?? 'How bubble sort works';
@@ -61,7 +61,7 @@ if (outcome === 'error') {
 check(outcome === 'ready', `on-device lesson prepared in ${secs}s`);
 
 if (outcome === 'ready') {
-  const badges = await page.locator('.badges').innerText();
+  const badges = await page.locator('.bar-meta').innerText();
   check(/On-device AI lesson/i.test(badges), `lesson is labelled as on-device (${badges.replace(/\s+/g, ' ')})`);
   const parts = await page.locator('.transcript-step').count();
   const lines = await page.locator('.transcript-line').count();

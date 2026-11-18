@@ -48,7 +48,7 @@ export function PlayerBar({
           <Back5 />
         </button>
         <button className="play-btn" onClick={onToggle} aria-label={playing ? 'Pause' : 'Play'} title="Play / pause (Space)">
-          {playing ? <Pause width={24} height={24} /> : <Play width={24} height={24} />}
+          {playing ? <Pause width={20} height={20} /> : <Play width={20} height={20} />}
         </button>
         <button className="icon-btn" onClick={() => onSeek(t + 5)} aria-label="Forward 5 seconds" title="Forward 5s (→)">
           <Fwd5 />
