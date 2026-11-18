@@ -126,6 +126,8 @@ await page.screenshot({ path: `${out}/5-quiz.png` });
 
 // Learner pen: draw a loop around the middle of the board, then ask about it.
 await page.getByRole('button', { name: /^Draw/ }).click();
+// Wait until pen mode is really on before drawing (avoids a race right after the click).
+await page.locator('.pen-layer.is-active').waitFor();
 const box = await page.locator('.board-wrap').boundingBox();
 const cx = box.x + box.width * 0.3;
 const cy = box.y + box.height * 0.45;
