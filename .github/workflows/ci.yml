@@ -1,4 +1,4 @@
-name: CI / CD
+name: CI/CD
 
 # CI runs on every push and pull request.
 # CD: a push to `main` that passes every check is deployed to Cloudflare Workers.
@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   check:
+    name: Build and test
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -32,6 +33,7 @@ jobs:
         run: npm audit --omit=dev --audit-level=high
 
   deploy:
+    name: Deploy to production
     # Only after all checks pass, only for pushes to main (never for PRs or other branches).
     needs: check
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
