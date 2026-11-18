@@ -258,16 +258,22 @@ p.field-error { padding: 0; background: none; }
 
 /* ===================================================== Lesson layout */
 /* Desktop lesson fits the window: top bar 56 + top padding 16 + bottom padding 24. */
-.lesson { --lesson-h: calc(100dvh - 56px - var(--s4) - var(--s6)); max-width: 1760px; margin: 0 auto; padding: var(--s4) clamp(var(--s3), 3vw, var(--s8)) var(--s6); display: grid; gap: var(--s4); }
+.lesson {
+  --lesson-h: calc(100dvh - 56px - var(--s4) - var(--s6));
+  /* Widest the board can be while still fitting the height (16:10-ish board + 48px hint row). */
+  --board-max-w: calc((var(--lesson-h) - 48px) * 100 / 62);
+  --panel-w: clamp(320px, 22vw, 440px);
+  margin: 0 auto; padding: var(--s4) clamp(var(--s3), 3vw, var(--s8)) var(--s6); display: grid; gap: var(--s4); }
 .notice { display: flex; gap: var(--s2); align-items: flex-start; padding: var(--s3) var(--s4); border-radius: var(--r-sm); background: var(--warning-soft); color: var(--warning-ink); font-size: var(--t-sm); }
 .notice svg { flex: none; margin-top: 2px; }
-.lesson-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: var(--s6); align-items: start; }
+/* Board column grows up to the height limit; the pair is centred, so large screens are filled evenly. */
+.lesson-grid { display: grid; grid-template-columns: minmax(0, var(--board-max-w)) var(--panel-w); justify-content: center; gap: var(--s6); align-items: stretch; }
 .stage { display: grid; gap: var(--s3); min-width: 0; }
-.stage-foot { width: 100%; max-width: calc((var(--lesson-h) - 48px) * 100 / 62); margin-inline: auto; min-height: 36px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s2) var(--s4); }
+.stage-foot { width: 100%; min-height: 36px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s2) var(--s4); }
 
 /* The board */
 /* Width-driven, but never taller than the space left above the hint row (36 px + 12 px gap). */
-.board-wrap { width: 100%; max-height: calc(var(--lesson-h) - 48px); max-width: calc((var(--lesson-h) - 48px) * 100 / 62); margin-inline: auto; position: relative; aspect-ratio: 100 / 62; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--e2); }
+.board-wrap { width: 100%; max-height: calc(var(--lesson-h) - 48px); position: relative; aspect-ratio: 100 / 62; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--e2); }
 .board-svg { width: 100%; height: 100%; display: block; }
 .board-text { font-family: var(--font-hand); font-weight: 700; }
 .board-marker { fill: var(--marker); opacity: 0.75; }
@@ -345,7 +351,9 @@ p.field-error { padding: 0; background: none; }
 .shortcuts dd { margin: 0; }
 
 /* ===================================================== Side panel */
-.side { position: sticky; top: 72px; display: grid; grid-template-rows: auto 1fr; height: min(var(--lesson-h), 820px); min-height: 420px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); }
+/* contain: size stops the long transcript from stretching the row: the panel takes exactly the
+   height of the board + hint row beside it, and scrolls inside. */
+.side { contain: size; display: grid; grid-template-rows: auto 1fr; min-height: 420px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); }
 .tabs { display: flex; gap: var(--s4); padding: 0 var(--s4); border-bottom: 1px solid var(--line); }
 .tab { display: inline-flex; align-items: center; gap: 6px; height: var(--h-md); padding: 0; border: 0; border-bottom: 2px solid transparent; background: none; font-size: var(--t-sm); font-weight: 500; color: var(--ink-3); transition: color 150ms var(--ease), border-color 150ms var(--ease); }
 .tab:hover { color: var(--ink); }
@@ -414,7 +422,7 @@ p.field-error { padding: 0; background: none; }
   .lesson-grid { grid-template-columns: 1fr; }
   /* Stacked layout scrolls normally; the board is sized by width only. */
   .board-wrap, .stage-foot { max-height: none; max-width: none; }
-  .side { position: static; height: 560px; }
+  .side { contain: none; height: 560px; }
 }
 @media (max-width: 640px) {
   .brand-name, .hide-sm, .status-pill { display: none; }
@@ -438,6 +446,10 @@ p.field-error { padding: 0; background: none; }
   .shortcuts { display: none; }
   .prompt .btn { padding: 0 var(--s3); }
 }
+
+/* Very large screens (27" QHD, 4K): scale interface text (all font sizes are rem-based). */
+@media (min-width: 2200px) { html { font-size: 112.5%; } }
+@media (min-width: 3200px) { html { font-size: 125%; } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
