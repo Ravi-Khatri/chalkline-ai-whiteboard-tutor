@@ -56,6 +56,8 @@ check(sampleCards > 0, `home lists ${sampleCards} sample lessons`);
 await page.locator('.sample-card').first().click();
 await page.getByRole('button', { name: 'Start lesson', exact: true }).waitFor({ timeout: 60000 });
 check(true, 'sample narration loaded');
+const fitsWindow = await page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight);
+check(fitsWindow, 'lesson page fits the window on desktop (no page scrollbar)');
 await page.getByRole('button', { name: 'Start lesson', exact: true }).click();
 await page.waitForTimeout(9000);
 const audible = await page.evaluate(() => [...document.querySelectorAll('audio'), ...(window.__mediaEls ?? [])].some((a) => !a.paused && !a.muted && a.volume > 0 && a.currentTime > 0));

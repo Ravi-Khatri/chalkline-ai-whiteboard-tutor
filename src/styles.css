@@ -87,6 +87,20 @@ button:not(:disabled), [role='button'], summary { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-xs); }
 [hidden] { display: none !important; }
 
+/* Slim scrollbars everywhere (page, side panel, chat, overflow areas).
+   Chromium/Safari use the ::-webkit-scrollbar styles. The standard
+   scrollbar-width/scrollbar-color properties are applied to Firefox only,
+   because Chromium ignores the custom styles whenever those are set. */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { border: 3px solid transparent; border-radius: var(--r-full); background: var(--line-strong); background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background-color: var(--ink-3); }
+::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+::-webkit-scrollbar-corner { background: transparent; }
+@supports (-moz-appearance: none) {
+  * { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+}
+
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .skip { position: absolute; left: -999px; top: var(--s2); z-index: 50; background: var(--surface); padding: var(--s2) var(--s3); border-radius: var(--r-sm); border: 1px solid var(--line-strong); }
 .skip:focus { left: var(--s2); }
@@ -243,15 +257,17 @@ p.field-error { padding: 0; background: none; }
 .loading-outline ol { margin: 6px 0 0; padding-left: 1.25rem; display: grid; gap: 2px; font-size: var(--t-sm); }
 
 /* ===================================================== Lesson layout */
-.lesson { max-width: 1440px; margin: 0 auto; padding: var(--s4) clamp(var(--s3), 3vw, var(--s8)) var(--s8); display: grid; gap: var(--s4); }
+/* Desktop lesson fits the window: top bar 56 + top padding 16 + bottom padding 24. */
+.lesson { --lesson-h: calc(100dvh - 56px - var(--s4) - var(--s6)); max-width: 1760px; margin: 0 auto; padding: var(--s4) clamp(var(--s3), 3vw, var(--s8)) var(--s6); display: grid; gap: var(--s4); }
 .notice { display: flex; gap: var(--s2); align-items: flex-start; padding: var(--s3) var(--s4); border-radius: var(--r-sm); background: var(--warning-soft); color: var(--warning-ink); font-size: var(--t-sm); }
 .notice svg { flex: none; margin-top: 2px; }
 .lesson-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: var(--s6); align-items: start; }
 .stage { display: grid; gap: var(--s3); min-width: 0; }
-.stage-foot { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--s2) var(--s4); }
+.stage-foot { width: 100%; max-width: calc((var(--lesson-h) - 48px) * 100 / 62); margin-inline: auto; min-height: 36px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s2) var(--s4); }
 
 /* The board */
-.board-wrap { position: relative; aspect-ratio: 100 / 62; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--e2); }
+/* Width-driven, but never taller than the space left above the hint row (36 px + 12 px gap). */
+.board-wrap { width: 100%; max-height: calc(var(--lesson-h) - 48px); max-width: calc((var(--lesson-h) - 48px) * 100 / 62); margin-inline: auto; position: relative; aspect-ratio: 100 / 62; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--e2); }
 .board-svg { width: 100%; height: 100%; display: block; }
 .board-text { font-family: var(--font-hand); font-weight: 700; }
 .board-marker { fill: var(--marker); opacity: 0.75; }
@@ -260,7 +276,7 @@ p.field-error { padding: 0; background: none; }
 .board-item:focus-visible .board-selection, .board-item:focus-visible > rect:first-of-type { stroke: var(--accent); }
 .board-item:hover > rect[fill='transparent'] { fill: rgb(79 70 229 / 0.06); }
 .board-wrap.is-drawing { outline: 2px dashed var(--pen); outline-offset: 3px; }
-.board-wrap.is-fullscreen { border: 0; border-radius: 0; box-shadow: none; display: flex; align-items: center; }
+.board-wrap.is-fullscreen { max-width: none; max-height: none; border: 0; border-radius: 0; box-shadow: none; display: flex; align-items: center; }
 
 /* Learner tools: a small floating toolbar in the board's corner */
 .board-tools { position: absolute; top: var(--s3); right: var(--s3); z-index: 3; display: flex; align-items: center; gap: 2px; padding: 3px; background: rgb(255 255 255 / 0.94); border: 1px solid var(--line); border-radius: var(--r-sm); box-shadow: var(--e1); }
@@ -329,7 +345,7 @@ p.field-error { padding: 0; background: none; }
 .shortcuts dd { margin: 0; }
 
 /* ===================================================== Side panel */
-.side { position: sticky; top: 72px; display: grid; grid-template-rows: auto 1fr; height: min(calc(100vh - 96px), 780px); min-height: 420px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); }
+.side { position: sticky; top: 72px; display: grid; grid-template-rows: auto 1fr; height: min(var(--lesson-h), 820px); min-height: 420px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); }
 .tabs { display: flex; gap: var(--s4); padding: 0 var(--s4); border-bottom: 1px solid var(--line); }
 .tab { display: inline-flex; align-items: center; gap: 6px; height: var(--h-md); padding: 0; border: 0; border-bottom: 2px solid transparent; background: none; font-size: var(--t-sm); font-weight: 500; color: var(--ink-3); transition: color 150ms var(--ease), border-color 150ms var(--ease); }
 .tab:hover { color: var(--ink); }
@@ -396,6 +412,8 @@ p.field-error { padding: 0; background: none; }
 /* ===================================================== Responsive */
 @media (max-width: 1024px) {
   .lesson-grid { grid-template-columns: 1fr; }
+  /* Stacked layout scrolls normally; the board is sized by width only. */
+  .board-wrap, .stage-foot { max-height: none; max-width: none; }
   .side { position: static; height: 560px; }
 }
 @media (max-width: 640px) {
