@@ -1,0 +1,6 @@
+# Cloudflare Workers Static Assets headers.
+# Send no Referer to other sites. Privacy, and required for on-device mode:
+# Hugging Face (where the open-source model files are downloaded from) answers
+# 404 to requests whose Referer is a *.workers.dev page.
+/*
+  Referrer-Policy: no-referrer

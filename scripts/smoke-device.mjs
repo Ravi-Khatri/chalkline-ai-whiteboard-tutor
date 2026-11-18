@@ -28,6 +28,9 @@ const ctx = await chromium.launchPersistentContext(profile, {
 const page = ctx.pages()[0] ?? (await ctx.newPage());
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
+page.on('requestfailed', (r) => console.log(`  REQUEST FAILED ${r.failure()?.errorText} ${r.url().slice(0, 160)}`));
+page.on('response', (r) => { if (r.status() >= 400) console.log(`  HTTP ${r.status()} ${r.url().slice(0, 160)}`); });
+ctx.on('requestfailed', (r) => console.log(`  (ctx) REQUEST FAILED ${r.failure()?.errorText} ${r.url().slice(0, 160)}`));
 page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') console.log(`  [console.${m.type()}] ${m.text().slice(0, 400)}`); });
 
 await page.goto(base);

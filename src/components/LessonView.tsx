@@ -1,4 +1,5 @@
 ﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { Lesson, QuizQuestion } from '../../shared/types.ts';
 import { boardAt } from '../../shared/timeline.ts';
 import { askTutor, ApiFailure } from '../lib/api.ts';
@@ -39,6 +40,8 @@ export function LessonView({ lesson, narration, onExit }: { lesson: Lesson; narr
   const [draft, setDraft] = useState('');
   const [pausedForQuestion, setPausedForQuestion] = useState(false);
   const [penOn, setPenOn] = useState(false);
+  const [navSlot, setNavSlot] = useState<HTMLElement | null>(null);
+  useEffect(() => setNavSlot(document.getElementById('nav-lesson-slot')), []);
   // Captions on/off (like YouTube's CC button), remembered per browser.
   const [captionsOn, setCaptionsOn] = useState(() => {
     try {
@@ -302,23 +305,30 @@ export function LessonView({ lesson, narration, onExit }: { lesson: Lesson; narr
 
   return (
     <div className="lesson">
-      <header className="lesson-head">
-        <button className="btn btn-ghost" onClick={onExit}>
-          <ArrowLeft width={18} height={18} /> New topic
-        </button>
-        <div className="lesson-title">
-          <h1>{lesson.title}</h1>
-          <div className="badges">
-            <span className={`badge ${lesson.source === 'live' ? 'badge-live' : 'badge-sample'}`} title={sourceHelp}>
-              {sourceLabel}
-            </span>
-            <span className="badge" title={voiceHelp}>
-              {voiceLabel}
-            </span>
-            <span className="badge">{lesson.level}</span>
-          </div>
-        </div>
-      </header>
+      {/* The lesson's title and meta live in the app bar (see App.tsx), rendered there through a portal. */}
+      {navSlot &&
+        createPortal(
+          <div className="bar-lesson">
+            <button className="icon-btn bar-back" onClick={onExit} aria-label="Back to topics" title="Back to topics">
+              <ArrowLeft width={20} height={20} />
+            </button>
+            <div className="bar-lesson-text">
+              <h1 className="bar-title" title={lesson.title}>
+                {lesson.title}
+              </h1>
+              <p className="bar-meta">
+                <span className={`meta-source meta-${onDevice ? 'device' : lesson.source}`} title={sourceHelp}>
+                  {sourceLabel}
+                </span>
+                <span className="meta-sep" aria-hidden="true">·</span>
+                <span title={voiceHelp}>{voiceLabel}</span>
+                <span className="meta-sep" aria-hidden="true">·</span>
+                <span className="meta-level">{lesson.level}</span>
+              </p>
+            </div>
+          </div>,
+          navSlot,
+        )}
 
       {narration.fallbackReason && (
         <div className="notice" role="status">

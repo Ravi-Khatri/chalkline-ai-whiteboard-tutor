@@ -39,8 +39,14 @@ export function assembleRawLesson(outline: Outline, stepBeats: RawBeat[][]) {
     quiz: outline.quiz,
     steps: outline.steps.map((s, i) => {
       const beats = namespaceIds(stepBeats[i] ?? [], `s${i + 1}`);
-      // Each step starts on a clean board (steps are written independently).
-      if (i > 0 && beats.length) beats[0].actions.unshift({ op: 'clear' });
+      if (beats.length) {
+        // Never start a step on an empty board: if its first sentence draws
+        // nothing, write the step title as a heading (common with small models).
+        const draws = beats[0].actions.some((a) => ['text', 'box', 'circle', 'graph'].includes(a.op));
+        if (!draws) beats[0].actions.unshift({ op: 'text', id: `s${i + 1}-heading`, text: s.title, x: 50, y: 5, size: 'lg' });
+        // Each step starts on a clean board (steps are written independently).
+        if (i > 0) beats[0].actions.unshift({ op: 'clear' });
+      }
       return { title: s.title, beats };
     }),
   };

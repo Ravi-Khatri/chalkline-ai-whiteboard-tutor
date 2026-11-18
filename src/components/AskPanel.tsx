@@ -47,8 +47,15 @@ export function AskPanel({
   };
 
   const suggestions = selectedLabel
-    ? [`What does "${selectedLabel}" mean?`, `Why is "${selectedLabel}" important here?`]
-    : ['Can you explain that again more simply?', 'Can you give me another example?', 'Why does this work?'];
+    ? ['What does this mean?', 'Why is this important?']
+    : ['Explain more simply', 'Another example', 'Why does this work?'];
+  // The chips are shortcuts; the full question sent to the tutor is clearer.
+  const fullQuestion: Record<string, string> = {
+    'Explain more simply': 'Can you explain that again more simply?',
+    'Another example': 'Can you give me another example?',
+    'What does this mean?': `What does "${selectedLabel}" mean?`,
+    'Why is this important?': `Why is "${selectedLabel}" important here?`,
+  };
 
   return (
     <div className="ask">
@@ -85,7 +92,7 @@ export function AskPanel({
 
       <div className="ask-suggestions">
         {suggestions.map((s) => (
-          <button key={s} className="chip" onClick={() => onAsk(s)} disabled={busy}>
+          <button key={s} className="chip" onClick={() => onAsk(fullQuestion[s] ?? s)} disabled={busy}>
             {s}
           </button>
         ))}

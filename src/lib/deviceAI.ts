@@ -85,6 +85,9 @@ export function explainDeviceError(err: unknown): string {
   if (isGpuFailure(err)) {
     return "Your graphics chip ran out of memory while running the model. On laptops with two graphics chips, set your browser to \"High performance\" in Windows Settings > System > Display > Graphics, then reload. Otherwise try the lighter model or the cloud.";
   }
+  if (/failed to fetch|networkerror|load failed/i.test(String((err as Error)?.message ?? err))) {
+    return 'The open-source model files could not be downloaded from huggingface.co. Check your internet connection, and allow huggingface.co and raw.githubusercontent.com if an ad blocker or firewall is active, then try again.';
+  }
   return err instanceof Error ? err.message : String(err);
 }
 
@@ -116,23 +119,64 @@ export async function loadDeviceModel(model: string, onProgress: (fraction: numb
   }
 }
 
-async function chat(eng: MLCEngineInterface, messages: unknown[], maxTokens: number, temperature: number, json = false): Promise<string> {
+async function chat(eng: MLCEngineInterface, messages: unknown[], maxTokens: number, temperature: number): Promise<string> {
   const res = await eng.chat.completions.create({
     messages: messages as ChatCompletionMessageParam[],
     max_tokens: maxTokens,
     temperature,
-    ...(json ? { response_format: { type: 'json_object' as const } } : {}),
   });
   return res.choices[0]?.message?.content ?? '';
 }
 
+/**
+ * Gets a JSON object from a small model. WebLLM's grammar-constrained
+ * `json_object` mode is not used: in 0.2.87 it fails to initialise
+ * ("GrammarMatcherInitError"). Instead: one try, one stricter retry.
+ */
 async function chatJson(eng: MLCEngineInterface, messages: unknown[], maxTokens: number): Promise<unknown> {
   try {
     return extractJson(await chat(eng, messages, maxTokens, 0.4));
   } catch {
-    // Retry with WebLLM's grammar-constrained JSON mode.
-    return extractJson(await chat(eng, messages, maxTokens, 0.3, true));
+    const stricter = [
+      ...(messages as { role: string; content: string }[]),
+      { role: 'user', content: 'Reply with ONLY the JSON object, starting with { and ending with }. No other text.' },
+    ];
+    return extractJson(await chat(eng, stricter, maxTokens, 0.2));
   }
+}
+
+/** Turns plain prose into narration beats (two sentences each, up to four beats), with no drawings. */
+export function proseToBeats(text: string): RawBeat[] {
+  const clean = text
+    .split(/\r?\n/)
+    .filter((l) => !/^\s*DRAW\s*:/i.test(l))
+    .join('\n')
+    .replace(/DRAW\s*:[^\n]*/gi, ' ')
+    .replace(/SAY\s*:\s*/gi, '')
+    .replace(/[*#_`>]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const sentences = clean.match(/[^.!?]+[.!?]+/g)?.map((s) => s.trim()).filter((s) => s.split(' ').length >= 4) ?? [];
+  const beats: RawBeat[] = [];
+  for (let i = 0; i < sentences.length && beats.length < 4; i += 2) beats.push({ say: sentences.slice(i, i + 2).join(' '), actions: [] });
+  return beats;
+}
+
+/** Standard five-part plan, used if a small model cannot produce a valid outline. */
+function defaultOutline(topic: string): Outline {
+  return {
+    title: topic.charAt(0).toUpperCase() + topic.slice(1),
+    summary: `A short introduction to ${topic}.`,
+    example: `one simple, concrete example of ${topic} with real values`,
+    steps: [
+      { title: 'The big question', goal: `Hook the learner with the question ${topic} answers, and draw the key idea.` },
+      { title: 'The core idea', goal: `Explain the central idea of ${topic} in plain words and draw its main parts.` },
+      { title: 'How it works', goal: 'Show the mechanism step by step, drawing each part and arrows between them.' },
+      { title: 'A worked example', goal: 'Walk through the running example with real values, demonstrating each change on the board.' },
+      { title: 'Recap', goal: 'Summarise the three most important points and point back at the key drawing.' },
+    ],
+    quiz: [],
+  };
 }
 
 export type DeviceStage = { stage: 'model'; fraction: number; text: string } | { stage: 'writing'; step: number; total: number };
@@ -164,19 +208,34 @@ async function writeLessonOnDevice(
   };
 
   onStage({ stage: 'writing', step: 0, total: STEP_COUNT });
-  const rawOutline = (await chatJson(eng, outlineMessages(topic, level), 900)) as Outline;
+  let outline: Outline;
+  try {
+    const rawOutline = (await chatJson(eng, outlineMessages(topic, level), 900)) as Outline;
+    if (typeof rawOutline?.refusal === 'string' && rawOutline.refusal.trim()) throw Object.assign(new Error(rawOutline.refusal.trim()), { refusal: true });
+    outline = checkOutline(rawOutline, STEP_COUNT);
+    // Too short a plan makes a thin lesson: keep the model's title and quiz, use the standard five parts.
+    if (outline.steps.length < 4) outline = { ...defaultOutline(topic), title: outline.title || topic, quiz: outline.quiz };
+  } catch (err) {
+    if ((err as { refusal?: boolean }).refusal || isGpuFailure(err)) throw err;
+    // Small models sometimes can't produce a valid plan; a standard plan still yields a good lesson.
+    console.warn('On-device outline unusable, using the standard five-part plan', String(err));
+    outline = defaultOutline(topic);
+  }
   abort();
-  if (typeof rawOutline?.refusal === 'string' && rawOutline.refusal.trim()) throw new Error(rawOutline.refusal.trim());
-  const outline = checkOutline(rawOutline, STEP_COUNT);
 
   const stepBeats: RawBeat[][] = [];
   for (let i = 0; i < outline.steps.length; i++) {
     onStage({ stage: 'writing', step: i + 1, total: outline.steps.length });
     let beats: RawBeat[] = [];
+    let lastText = '';
     for (let attempt = 0; attempt < 2 && beats.length < 2; attempt++) {
-      beats = parseStep(await chat(eng, stepMessages(topic, level, outline, i), 700, attempt ? 0.3 : 0.6));
+      lastText = await chat(eng, stepMessages(topic, level, outline, i), 700, attempt ? 0.3 : 0.6);
+      const parsed = parseStep(lastText);
+      if (parsed.length > beats.length) beats = parsed;
       abort();
     }
+    // Small models sometimes ignore the SAY/DRAW format and write prose; keep the prose as narration.
+    if (!beats.length) beats = proseToBeats(lastText);
     stepBeats.push(beats);
   }
 

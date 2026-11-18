@@ -6,6 +6,7 @@ import { Home } from './components/Home.tsx';
 import { LessonView } from './components/LessonView.tsx';
 import { Loading, type LoadingState } from './components/Loading.tsx';
 import { generateLessonOnDevice } from './lib/deviceAI.ts';
+import { GitHub, Plus } from './components/Icons.tsx';
 
 export type AiMode = 'cloud' | 'device';
 
@@ -104,17 +105,39 @@ export function App() {
       <a className="skip" href="#main">
         Skip to content
       </a>
-      <nav className="topbar">
+      <header className={`topbar${phase.name === 'lesson' ? ' in-lesson' : ''}`}>
         <button className="brand" onClick={cancel} aria-label="Chalkline home">
-          <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
-            <rect x="2" y="5" width="28" height="20" rx="4" fill="var(--color-primary)" />
+          <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="2" y="5" width="28" height="20" rx="5" fill="var(--color-primary)" />
             <path d="M8 18c3-6 6-6 8-2s5 4 8-3" stroke="#fff" strokeWidth="2.4" fill="none" strokeLinecap="round" />
             <path d="M12 29h8M16 25v4" stroke="var(--color-primary)" strokeWidth="2.4" strokeLinecap="round" />
           </svg>
-          <span>Chalkline</span>
+          <span className="brand-name">Chalkline</span>
         </button>
-        <span className="muted small topbar-note">Free demo · Cloudflare Workers AI or an open model on your device</span>
-      </nav>
+        {/* Filled by LessonView (back button, title, meta) while a lesson is open. */}
+        <div id="nav-lesson-slot" className="topbar-center" />
+        <div className="topbar-right">
+          {phase.name === 'lesson' ? (
+            <button className="btn btn-sm btn-primary" onClick={() => setPhase({ name: 'home' })}>
+              <Plus width={16} height={16} /> <span className="hide-sm">New lesson</span>
+            </button>
+          ) : (
+            <span className="status-pill" title="Runs on the Cloudflare Workers Free plan, or on an open-source model in your browser">
+              <span className="status-dot" aria-hidden="true" /> Free · open source
+            </span>
+          )}
+          <a
+            className="icon-btn"
+            href="https://github.com/Ravi-Khatri/chalkline-ai-whiteboard-tutor"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Source code on GitHub"
+            title="Source code on GitHub"
+          >
+            <GitHub width={20} height={20} />
+          </a>
+        </div>
+      </header>
       <div id="main">
         {phase.name === 'home' && (
           <Home onStart={startLive} onSample={startSample} error={phase.error} errorCode={phase.errorCode} initialTopic={phase.topic} initialLevel={phase.level} />
