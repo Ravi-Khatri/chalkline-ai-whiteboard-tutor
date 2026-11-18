@@ -1,0 +1,639 @@
+{
+  "id": "compound-interest",
+  "topic": "How compound interest works",
+  "title": "Understanding Compound Interest",
+  "level": "beginner",
+  "summary": "Compound interest is a way that savings or investments can grow over time by earning interest on both the initial amount and any interest that has been added",
+  "steps": [
+    {
+      "id": "s1",
+      "title": "Introduction to Compound Interest",
+      "beats": [
+        {
+          "id": "s1b1",
+          "say": "Let's explore Understanding Compound Interest, a powerful concept in finance.",
+          "actions": [
+            {
+              "op": "text",
+              "id": "s1-title",
+              "text": "Understanding Compound Interest",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 6.38
+            }
+          ]
+        },
+        {
+          "id": "s1b2",
+          "say": "Compound interest helps your savings grow faster over time, but how does it actually work.",
+          "actions": [
+            {
+              "op": "box",
+              "id": "s1-question",
+              "text": "How does it work?",
+              "color": "ink",
+              "size": "sm",
+              "x": 50,
+              "y": 20,
+              "w": 18,
+              "h": 8.5
+            }
+          ]
+        },
+        {
+          "id": "s1b3",
+          "say": "Imagine you save one thousand dollars, and it earns interest every year, growing into more money.",
+          "actions": [
+            {
+              "op": "box",
+              "id": "s1-start",
+              "text": "1000",
+              "color": "green",
+              "size": "sm",
+              "x": 20,
+              "y": 35,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s1-year1",
+              "text": "1000",
+              "color": "green",
+              "size": "sm",
+              "x": 30,
+              "y": 35,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s1-year2",
+              "text": "?",
+              "color": "green",
+              "size": "sm",
+              "x": 40,
+              "y": 35,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s1-year3",
+              "text": "?",
+              "color": "green",
+              "size": "sm",
+              "x": 50,
+              "y": 35,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "line",
+              "from": "s1-start",
+              "to": "s1-year1",
+              "color": "green"
+            },
+            {
+              "op": "line",
+              "from": "s1-year1",
+              "to": "s1-year2",
+              "color": "green"
+            }
+          ]
+        },
+        {
+          "id": "s1b4",
+          "say": "Let's find out how this growth happens, and what makes compound interest so effective.",
+          "actions": [
+            {
+              "op": "arrow",
+              "from": "s1-year3",
+              "to": "s1-question",
+              "color": "ink",
+              "text": "growth"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "title": "Core Idea of Compound Interest",
+      "beats": [
+        {
+          "id": "s2b1",
+          "say": "Compound interest is earning interest on both the initial amount and the added interest.",
+          "actions": [
+            {
+              "op": "clear"
+            },
+            {
+              "op": "text",
+              "id": "s2-title",
+              "text": "Core Idea of Compound Interest",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 6.38
+            },
+            {
+              "op": "box",
+              "id": "s2-principal",
+              "text": "Principal",
+              "color": "green",
+              "size": "sm",
+              "x": 20,
+              "y": 20,
+              "w": 10,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s2-interest",
+              "text": "Interest",
+              "color": "red",
+              "size": "sm",
+              "x": 40,
+              "y": 20,
+              "w": 10,
+              "h": 7
+            }
+          ]
+        },
+        {
+          "id": "s2b2",
+          "say": "The principal is the initial amount, and interest is the amount earned on it over time.",
+          "actions": [
+            {
+              "op": "arrow",
+              "from": "s2-principal",
+              "to": "s2-interest",
+              "color": "ink",
+              "text": "earnings"
+            },
+            {
+              "op": "box",
+              "id": "s2-earnings",
+              "text": "Total",
+              "color": "blue",
+              "size": "sm",
+              "x": 60,
+              "y": 20,
+              "w": 10,
+              "h": 7
+            }
+          ]
+        },
+        {
+          "id": "s2b3",
+          "say": "As interest is added to the principal, the total amount grows, and interest is earned on that new total.",
+          "actions": [
+            {
+              "op": "arrow",
+              "from": "s2-interest",
+              "to": "s2-earnings",
+              "color": "ink",
+              "text": "added"
+            },
+            {
+              "op": "arrow",
+              "from": "s2-earnings",
+              "to": "s2-interest",
+              "color": "ink",
+              "text": "new earnings"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "title": "How Compound Interest Works",
+      "beats": [
+        {
+          "id": "s3b1",
+          "say": "How Compound Interest Works is the process of earning interest on both the initial amount and the accumulated interest over time.",
+          "actions": [
+            {
+              "op": "clear"
+            },
+            {
+              "op": "text",
+              "id": "s3-title",
+              "text": "How Compound Interest Works",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 6.38
+            },
+            {
+              "op": "box",
+              "id": "s3-year-1",
+              "text": "Year 1",
+              "color": "green",
+              "size": "sm",
+              "x": 20,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s3-year-2",
+              "text": "Year 2",
+              "color": "green",
+              "size": "sm",
+              "x": 30,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s3-year-3",
+              "text": "Year 3",
+              "color": "green",
+              "size": "sm",
+              "x": 40,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            }
+          ]
+        },
+        {
+          "id": "s3b2",
+          "say": "Let's use an example where you save one thousand dollars at a five percent annual interest rate.",
+          "actions": [
+            {
+              "op": "text",
+              "id": "s3-principal",
+              "text": "1000 dollars",
+              "color": "ink",
+              "size": "md",
+              "x": 20,
+              "y": 30
+            },
+            {
+              "op": "text",
+              "id": "s3-interest-rate",
+              "text": "5 percent",
+              "color": "ink",
+              "size": "md",
+              "x": 30,
+              "y": 35
+            }
+          ]
+        },
+        {
+          "id": "s3b3",
+          "say": "In the first year, you earn fifty dollars in interest, making your total one thousand fifty dollars.",
+          "actions": [
+            {
+              "op": "text",
+              "id": "s3-year-1-interest",
+              "text": "50 dollars",
+              "color": "ink",
+              "size": "md",
+              "x": 20,
+              "y": 40
+            },
+            {
+              "op": "line",
+              "from": "s3-year-1",
+              "to": "s3-year-2",
+              "color": "ink"
+            }
+          ]
+        },
+        {
+          "id": "s3b4",
+          "say": "In the second year, you earn interest on the new total, which is one thousand fifty dollars, not just the initial one thousand dollars.",
+          "actions": [
+            {
+              "op": "text",
+              "id": "s3-year-2-interest",
+              "text": "52.50 dollars",
+              "color": "ink",
+              "size": "md",
+              "x": 30,
+              "y": 45
+            },
+            {
+              "op": "highlight",
+              "target": "s3-year-2-interest"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "title": "Calculating Compound Interest",
+      "beats": [
+        {
+          "id": "s4b1",
+          "say": "Calculating Compound Interest is a step by step process to find the total amount.",
+          "actions": [
+            {
+              "op": "clear"
+            },
+            {
+              "op": "text",
+              "id": "s4-title",
+              "text": "Calculating Compound Interest",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 6.38
+            }
+          ]
+        },
+        {
+          "id": "s4b2",
+          "say": "We use a formula to calculate the future value of our investment, which is one thousand dollars.",
+          "actions": [
+            {
+              "op": "box",
+              "id": "s4-year1",
+              "text": "$1000",
+              "color": "green",
+              "size": "sm",
+              "x": 10,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s4-year2",
+              "text": "$1000",
+              "color": "green",
+              "size": "sm",
+              "x": 20,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s4-year3",
+              "text": "$1000",
+              "color": "green",
+              "size": "sm",
+              "x": 30,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s4-year4",
+              "text": "$1000",
+              "color": "green",
+              "size": "sm",
+              "x": 40,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            }
+          ]
+        },
+        {
+          "id": "s4b3",
+          "say": "Each year, we add five percent of the current amount to the total, which is the interest earned.",
+          "actions": [
+            {
+              "op": "text",
+              "id": "s4-formula",
+              "text": "A = P * (1 + r)^n",
+              "color": "ink",
+              "size": "md",
+              "x": 50,
+              "y": 40
+            },
+            {
+              "op": "underline",
+              "target": "s4-formula",
+              "color": "red"
+            }
+          ]
+        },
+        {
+          "id": "s4b4",
+          "say": "Using this formula, we can calculate the interest earned over several years and see how our investment grows.",
+          "actions": [
+            {
+              "op": "box",
+              "id": "s4-year1-interest",
+              "text": "$50",
+              "color": "red",
+              "size": "sm",
+              "x": 10,
+              "y": 35,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s4-year2-interest",
+              "text": "$52.50",
+              "color": "red",
+              "size": "sm",
+              "x": 20,
+              "y": 35,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s4-year3-interest",
+              "text": "$55.13",
+              "color": "red",
+              "size": "sm",
+              "x": 30,
+              "y": 35,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s4-year4-interest",
+              "text": "$57.88",
+              "color": "red",
+              "size": "sm",
+              "x": 40,
+              "y": 32.5,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "line",
+              "from": "s4-year1",
+              "to": "s4-year1-interest",
+              "color": "green"
+            },
+            {
+              "op": "line",
+              "from": "s4-year2",
+              "to": "s4-year2-interest",
+              "color": "green"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "title": "Recap of Compound Interest",
+      "beats": [
+        {
+          "id": "s5b1",
+          "say": "Recap of Compound Interest is understanding how interest grows over time.",
+          "actions": [
+            {
+              "op": "clear"
+            },
+            {
+              "op": "text",
+              "id": "s5-title",
+              "text": "Recap of Compound Interest",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 6.38
+            }
+          ]
+        },
+        {
+          "id": "s5b2",
+          "say": "You start with a principal amount, one thousand dollars in our example, and earn five percent interest each year.",
+          "actions": [
+            {
+              "op": "box",
+              "id": "s5-principal",
+              "text": "1000",
+              "color": "green",
+              "size": "sm",
+              "x": 20,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s5-year1",
+              "text": "1050",
+              "color": "green",
+              "size": "sm",
+              "x": 30,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s5-year2",
+              "text": "1102.5",
+              "color": "green",
+              "size": "sm",
+              "x": 40,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s5-year3",
+              "text": "1157.63",
+              "color": "green",
+              "size": "sm",
+              "x": 50,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            }
+          ]
+        },
+        {
+          "id": "s5b3",
+          "say": "The key point is that you earn interest on both the principal and the accumulated interest, which is why it grows so quickly.",
+          "actions": [
+            {
+              "op": "arrow",
+              "from": "s5-principal",
+              "to": "s5-year1",
+              "color": "ink",
+              "text": "5 percent"
+            },
+            {
+              "op": "arrow",
+              "from": "s5-year1",
+              "to": "s5-year2",
+              "color": "ink",
+              "text": "5 percent"
+            },
+            {
+              "op": "arrow",
+              "from": "s5-year2",
+              "to": "s5-year3",
+              "color": "ink",
+              "text": "5 percent"
+            }
+          ]
+        },
+        {
+          "id": "s5b4",
+          "say": "Understanding compound interest helps you make informed decisions about saving and investing your money.",
+          "actions": [
+            {
+              "op": "highlight",
+              "target": "s5-year3"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "quiz": [
+    {
+      "q": "What is compound interest?",
+      "options": [
+        "Interest earned only on the initial amount",
+        "Interest earned on both the initial amount and the accumulated interest",
+        "A type of savings account",
+        "A type of loan"
+      ],
+      "answer": 1,
+      "why": "Compound interest is the process of earning interest on both the principal amount and the accumulated interest"
+    },
+    {
+      "q": "What happens to the interest earned through compound interest?",
+      "options": [
+        "It is paid out immediately",
+        "It is added to the principal amount",
+        "It is lost",
+        "It is taxed"
+      ],
+      "answer": 1,
+      "why": "The interest earned through compound interest is added to the principal amount, allowing the investment to grow over time"
+    },
+    {
+      "q": "Why is it important to understand compound interest?",
+      "options": [
+        "So you can avoid saving money",
+        "So you can make informed decisions about investments and savings",
+        "So you can earn more interest",
+        "So you can spend more money"
+      ],
+      "answer": 1,
+      "why": "Understanding compound interest is important because it allows you to make informed decisions about investments and savings"
+    }
+  ],
+  "source": "sample",
+  "model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+  "audio": "mp3",
+  "voiceTier": "premium"
+}

@@ -1,0 +1,429 @@
+{
+  "id": "sky-blue",
+  "topic": "Why the sky is blue",
+  "title": "Why the Sky is Blue",
+  "level": "beginner",
+  "summary": "The sky appears blue because of the way light interacts with the Earth's atmosphere",
+  "steps": [
+    {
+      "id": "s1",
+      "title": "Introduction to the Question",
+      "beats": [
+        {
+          "id": "s1b1",
+          "say": "Have you ever looked up and wondered why the sky is blue?",
+          "actions": [
+            {
+              "op": "text",
+              "id": "s1-title",
+              "text": "Why the Sky is Blue",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 5
+            },
+            {
+              "op": "circle",
+              "id": "s1-earth",
+              "text": "Earth",
+              "color": "green",
+              "size": "sm",
+              "x": 50,
+              "y": 28,
+              "r": 9
+            }
+          ]
+        },
+        {
+          "id": "s1b2",
+          "say": "The Earth's atmosphere is surrounded by a big layer of gases that surrounds our planet.",
+          "actions": [
+            {
+              "op": "circle",
+              "id": "s1-atmosphere",
+              "text": "Atmosphere",
+              "color": "blue",
+              "size": "sm",
+              "x": 74,
+              "y": 40,
+              "r": 14
+            }
+          ]
+        },
+        {
+          "id": "s1b3",
+          "say": "Sunlight enters the atmosphere and something interesting happens to the light as it passes through.",
+          "actions": []
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "title": "The Core Idea of Light Scattering",
+      "beats": [
+        {
+          "id": "s2b1",
+          "say": "The core idea behind the sky's blue color is light scattering.",
+          "actions": [
+            {
+              "op": "clear"
+            },
+            {
+              "op": "text",
+              "id": "s2-title",
+              "text": "The Core Idea of Light Scattering",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 6.38
+            },
+            {
+              "op": "box",
+              "id": "s2-light",
+              "text": "Sunlight",
+              "color": "orange",
+              "size": "sm",
+              "x": 20,
+              "y": 20,
+              "w": 15,
+              "h": 7
+            }
+          ]
+        },
+        {
+          "id": "s2b2",
+          "say": "When sunlight enters the atmosphere, it scatters in different directions.",
+          "actions": [
+            {
+              "op": "circle",
+              "id": "s2-molecule",
+              "text": "Air molecule",
+              "color": "blue",
+              "size": "sm",
+              "x": 40,
+              "y": 30,
+              "r": 6.3
+            }
+          ]
+        },
+        {
+          "id": "s2b3",
+          "say": "The light bounces off tiny molecules of gases in the air, scattering everywhere.",
+          "actions": []
+        },
+        {
+          "id": "s2b4",
+          "say": "This scattering effect is what gives the sky its blue color.",
+          "actions": [
+            {
+              "op": "highlight",
+              "target": "s2-molecule"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "title": "How Light Scattering Works",
+      "beats": [
+        {
+          "id": "s3b1",
+          "say": "How Light Scattering Works",
+          "actions": [
+            {
+              "op": "clear"
+            },
+            {
+              "op": "text",
+              "id": "s3-title",
+              "text": "How Light Scattering Works",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 6.38
+            }
+          ]
+        },
+        {
+          "id": "s3b2",
+          "say": "Light is made up of different colours, each with a specific wavelength, like a row of different sized waves.",
+          "actions": [
+            {
+              "op": "box",
+              "id": "s3-violet",
+              "text": "Violet",
+              "color": "purple",
+              "size": "sm",
+              "x": 10,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s3-blue",
+              "text": "Blue",
+              "color": "blue",
+              "size": "sm",
+              "x": 20,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s3-red",
+              "text": "Red",
+              "color": "red",
+              "size": "sm",
+              "x": 30,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s3-orange",
+              "text": "Orange",
+              "color": "orange",
+              "size": "sm",
+              "x": 40,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            }
+          ]
+        },
+        {
+          "id": "s3b3",
+          "say": "Shorter wavelengths, like blue and violet, scatter more than longer wavelengths, like red and orange.",
+          "actions": []
+        },
+        {
+          "id": "s3b4",
+          "say": "This is because the tiny molecules in the air are more likely to bounce the shorter waves around.",
+          "actions": [
+            {
+              "op": "highlight",
+              "target": "s3-blue"
+            },
+            {
+              "op": "highlight",
+              "target": "s3-violet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "title": "Applying the Concept to the Example",
+      "beats": [
+        {
+          "id": "s4b1",
+          "say": "Applying the Concept to the Example",
+          "actions": [
+            {
+              "op": "clear"
+            },
+            {
+              "op": "text",
+              "id": "s4-title",
+              "text": "Applying the Concept to the Example",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 6.38
+            },
+            {
+              "op": "circle",
+              "id": "s4-sun",
+              "text": "Sun",
+              "color": "orange",
+              "size": "sm",
+              "x": 14,
+              "y": 28,
+              "r": 7
+            }
+          ]
+        },
+        {
+          "id": "s4b2",
+          "say": "Sunlight enters the Earth's atmosphere and hits tiny molecules of gases in the air.",
+          "actions": [
+            {
+              "op": "box",
+              "id": "s4-atmosphere",
+              "text": "Atmosphere",
+              "color": "blue",
+              "size": "sm",
+              "x": 50,
+              "y": 28,
+              "w": 20,
+              "h": 8
+            },
+            {
+              "op": "arrow",
+              "from": "s4-sun",
+              "to": "s4-atmosphere",
+              "color": "ink",
+              "text": "sunlight"
+            }
+          ]
+        },
+        {
+          "id": "s4b3",
+          "say": "The shorter blue wavelengths scatter in all directions and reach our eyes from everywhere.",
+          "actions": [
+            {
+              "op": "circle",
+              "id": "s4-eye",
+              "text": "You",
+              "color": "ink",
+              "size": "sm",
+              "x": 86,
+              "y": 28,
+              "r": 6
+            },
+            {
+              "op": "arrow",
+              "from": "s4-atmosphere",
+              "to": "s4-eye",
+              "color": "blue",
+              "text": "scattered blue"
+            },
+            {
+              "op": "highlight",
+              "target": "s4-atmosphere"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "title": "Recap and Key Takeaway",
+      "beats": [
+        {
+          "id": "s5b1",
+          "say": "Recap and Key Takeaway",
+          "actions": [
+            {
+              "op": "clear"
+            },
+            {
+              "op": "text",
+              "id": "s5-title",
+              "text": "Recap and Key Takeaway",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 6.38
+            },
+            {
+              "op": "box",
+              "id": "s5-step1",
+              "text": "Sunlight enters",
+              "color": "ink",
+              "size": "sm",
+              "x": 10,
+              "y": 20,
+              "w": 15,
+              "h": 8.5
+            },
+            {
+              "op": "box",
+              "id": "s5-step2",
+              "text": "Scatters in air",
+              "color": "ink",
+              "size": "sm",
+              "x": 30,
+              "y": 20,
+              "w": 15,
+              "h": 8.5
+            },
+            {
+              "op": "box",
+              "id": "s5-step3",
+              "text": "Blue light bounces",
+              "color": "ink",
+              "size": "sm",
+              "x": 50,
+              "y": 20,
+              "w": 15,
+              "h": 8.5
+            }
+          ]
+        },
+        {
+          "id": "s5b2",
+          "say": "The key point is that shorter wavelengths like blue scatter more than longer wavelengths like red.",
+          "actions": [
+            {
+              "op": "arrow",
+              "from": "s5-step2",
+              "to": "s5-step3",
+              "color": "ink",
+              "text": "short waves"
+            },
+            {
+              "op": "underline",
+              "target": "s5-step3",
+              "color": "blue"
+            }
+          ]
+        },
+        {
+          "id": "s5b3",
+          "say": "So remember that scattering of short waves by the atmosphere makes the sky appear blue.",
+          "actions": [
+            {
+              "op": "highlight",
+              "target": "s5-step3"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "quiz": [
+    {
+      "q": "What is the main reason the sky appears blue?",
+      "options": [
+        "The Earth's atmosphere absorbs all other colors of light",
+        "The Earth's atmosphere scatters shorter wavelengths of light more",
+        "The sun only emits blue light",
+        "The oceans reflect blue light into the atmosphere"
+      ],
+      "answer": 1,
+      "why": "The correct answer is based on the principle that the Earth's atmosphere scatters shorter wavelengths of light, like blue and violet, more than longer wavelengths."
+    },
+    {
+      "q": "Which of the following types of light is scattered more by the Earth's atmosphere?",
+      "options": [
+        "Red light",
+        "Blue light",
+        "Green light",
+        "All types of light are scattered equally"
+      ],
+      "answer": 1,
+      "why": "According to the explanation, shorter wavelengths of light, such as blue and violet, are scattered more than longer wavelengths, like red and orange."
+    },
+    {
+      "q": "What happens to the scattered blue light in the Earth's atmosphere?",
+      "options": [
+        "It is absorbed by the oceans",
+        "It is reflected back into space",
+        "It reaches our eyes, making the sky appear blue",
+        "It is scattered again into the atmosphere"
+      ],
+      "answer": 2,
+      "why": "The scattered blue light is what reaches our eyes, allowing us to see the sky as blue."
+    }
+  ],
+  "source": "sample",
+  "model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+  "audio": "mp3",
+  "voiceTier": "premium"
+}

@@ -1,0 +1,606 @@
+{
+  "id": "binary-search",
+  "topic": "How binary search works",
+  "title": "Binary Search Explained",
+  "level": "beginner",
+  "summary": "Binary search is an efficient way to find an item in a sorted list by repeatedly dividing the list in half until the item is found.",
+  "steps": [
+    {
+      "id": "s1",
+      "title": "Introduction to Binary Search",
+      "beats": [
+        {
+          "id": "s1b1",
+          "say": "Binary search is a way to quickly find an item in a sorted list.",
+          "actions": [
+            {
+              "op": "text",
+              "id": "s1-title",
+              "text": "Binary Search Explained",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 6.38
+            },
+            {
+              "op": "box",
+              "id": "s1-item1",
+              "text": "3",
+              "color": "ink",
+              "size": "sm",
+              "x": 10,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s1-item2",
+              "text": "8",
+              "color": "ink",
+              "size": "sm",
+              "x": 20,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s1-item3",
+              "text": "15",
+              "color": "ink",
+              "size": "sm",
+              "x": 30,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s1-item4",
+              "text": "23",
+              "color": "ink",
+              "size": "sm",
+              "x": 40,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s1-item5",
+              "text": "42",
+              "color": "ink",
+              "size": "sm",
+              "x": 50,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            }
+          ]
+        },
+        {
+          "id": "s1b2",
+          "say": "Imagine you have a list like this and you want to find a specific number, like 57.",
+          "actions": []
+        },
+        {
+          "id": "s1b3",
+          "say": "But how does binary search actually work to find that number so quickly.",
+          "actions": []
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "title": "The Core Idea",
+      "beats": [
+        {
+          "id": "s2b1",
+          "say": "The core idea is to divide and search,",
+          "actions": [
+            {
+              "op": "clear"
+            },
+            {
+              "op": "text",
+              "id": "s2-title",
+              "text": "The Core Idea",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 5
+            },
+            {
+              "op": "text",
+              "id": "s2-divide",
+              "text": "Divide in half",
+              "color": "ink",
+              "size": "md",
+              "x": 50,
+              "y": 14
+            }
+          ]
+        },
+        {
+          "id": "s2b2",
+          "say": "Binary search works by splitting the list in two parts,",
+          "actions": [
+            {
+              "op": "box",
+              "id": "s2-list1",
+              "text": "3",
+              "color": "ink",
+              "size": "sm",
+              "x": 20,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s2-list2",
+              "text": "8",
+              "color": "ink",
+              "size": "sm",
+              "x": 30,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s2-list3",
+              "text": "15",
+              "color": "ink",
+              "size": "sm",
+              "x": 40,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s2-list4",
+              "text": "23",
+              "color": "ink",
+              "size": "sm",
+              "x": 50,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s2-list5",
+              "text": "42",
+              "color": "ink",
+              "size": "sm",
+              "x": 60,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s2-list6",
+              "text": "57",
+              "color": "ink",
+              "size": "sm",
+              "x": 70,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            }
+          ]
+        },
+        {
+          "id": "s2b3",
+          "say": "and looking for the target in one of the two halves,",
+          "actions": [
+            {
+              "op": "box",
+              "id": "s2-left",
+              "text": "Left half",
+              "color": "blue",
+              "size": "sm",
+              "x": 30,
+              "y": 42,
+              "w": 20,
+              "h": 8
+            },
+            {
+              "op": "box",
+              "id": "s2-right",
+              "text": "Right half",
+              "color": "blue",
+              "size": "sm",
+              "x": 60,
+              "y": 42,
+              "w": 20,
+              "h": 8
+            },
+            {
+              "op": "arrow",
+              "from": "s2-list3",
+              "to": "s2-left",
+              "color": "ink",
+              "text": "Search here"
+            },
+            {
+              "op": "arrow",
+              "from": "s2-list5",
+              "to": "s2-right",
+              "color": "green",
+              "text": "or here"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "title": "How Binary Search Works",
+      "beats": [
+        {
+          "id": "s3b1",
+          "say": "How Binary Search Works is a step-by-step process to find a target value.",
+          "actions": [
+            {
+              "op": "clear"
+            },
+            {
+              "op": "text",
+              "id": "s3-title",
+              "text": "How Binary Search Works",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 6.38
+            }
+          ]
+        },
+        {
+          "id": "s3b2",
+          "say": "We start with a sorted list of numbers and a target value, fifty-seven in this case.",
+          "actions": [
+            {
+              "op": "box",
+              "id": "s3-list-1",
+              "text": "3",
+              "color": "ink",
+              "size": "sm",
+              "x": 10,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s3-list-2",
+              "text": "8",
+              "color": "ink",
+              "size": "sm",
+              "x": 20,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s3-list-3",
+              "text": "15",
+              "color": "ink",
+              "size": "sm",
+              "x": 30,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s3-list-4",
+              "text": "23",
+              "color": "ink",
+              "size": "sm",
+              "x": 40,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s3-list-5",
+              "text": "42",
+              "color": "ink",
+              "size": "sm",
+              "x": 50,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s3-list-6",
+              "text": "57",
+              "color": "ink",
+              "size": "sm",
+              "x": 60,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            }
+          ]
+        },
+        {
+          "id": "s3b3",
+          "say": "First, we find the middle element of the list and compare it to the target value.",
+          "actions": [
+            {
+              "op": "box",
+              "id": "s3-middle",
+              "text": "Middle",
+              "color": "blue",
+              "size": "sm",
+              "x": 40,
+              "y": 40,
+              "w": 10,
+              "h": 7
+            },
+            {
+              "op": "arrow",
+              "from": "s3-list-5",
+              "to": "s3-middle",
+              "color": "ink",
+              "text": "is 42"
+            }
+          ]
+        },
+        {
+          "id": "s3b4",
+          "say": "If the target value is greater than the middle element, we adjust the search interval to the right half.",
+          "actions": [
+            {
+              "op": "highlight",
+              "target": "s3-list-6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "title": "Worked Example",
+      "beats": [
+        {
+          "id": "s4b1",
+          "say": "Let's find the number 57 in this sorted list using binary search.",
+          "actions": [
+            {
+              "op": "clear"
+            },
+            {
+              "op": "text",
+              "id": "s4-title",
+              "text": "Worked Example",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 5
+            },
+            {
+              "op": "box",
+              "id": "s4-list-1",
+              "text": "3",
+              "color": "ink",
+              "size": "sm",
+              "x": 10,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s4-list-2",
+              "text": "8",
+              "color": "ink",
+              "size": "sm",
+              "x": 20,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s4-list-3",
+              "text": "15",
+              "color": "ink",
+              "size": "sm",
+              "x": 30,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s4-list-4",
+              "text": "23",
+              "color": "ink",
+              "size": "sm",
+              "x": 40,
+              "y": 20,
+              "w": 8,
+              "h": 7
+            }
+          ]
+        },
+        {
+          "id": "s4b2",
+          "say": "First, we compare 57 to the middle element, which is 23.",
+          "actions": [
+            {
+              "op": "highlight",
+              "target": "s4-list-4"
+            },
+            {
+              "op": "text",
+              "id": "s4-middle",
+              "text": "Middle: 23",
+              "color": "blue",
+              "size": "md",
+              "x": 50,
+              "y": 30
+            }
+          ]
+        },
+        {
+          "id": "s4b3",
+          "say": "Since 57 is greater than 23, we look at the right half of the list.",
+          "actions": [
+            {
+              "op": "text",
+              "id": "s4-right-half",
+              "text": "Right half",
+              "color": "red",
+              "size": "md",
+              "x": 60,
+              "y": 40
+            }
+          ]
+        },
+        {
+          "id": "s4b4",
+          "say": "Now, we compare 57 to the middle of the right half, which is 57.",
+          "actions": [
+            {
+              "op": "text",
+              "id": "s4-new-middle",
+              "text": "Middle: 57",
+              "color": "green",
+              "size": "md",
+              "x": 60,
+              "y": 35
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "title": "Recap and Key Takeaway",
+      "beats": [
+        {
+          "id": "s5b1",
+          "say": "Recap and Key Takeaway of binary search is that it efficiently finds an item.",
+          "actions": [
+            {
+              "op": "clear"
+            },
+            {
+              "op": "text",
+              "id": "s5-title",
+              "text": "Recap and Key Takeaway",
+              "color": "ink",
+              "size": "lg",
+              "x": 50,
+              "y": 6.38
+            },
+            {
+              "op": "box",
+              "id": "s5-list-box-1",
+              "text": "3",
+              "color": "ink",
+              "size": "sm",
+              "x": 10,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s5-list-box-2",
+              "text": "8",
+              "color": "ink",
+              "size": "sm",
+              "x": 20,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s5-list-box-3",
+              "text": "15",
+              "color": "ink",
+              "size": "sm",
+              "x": 30,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            },
+            {
+              "op": "box",
+              "id": "s5-list-box-4",
+              "text": "23",
+              "color": "ink",
+              "size": "sm",
+              "x": 40,
+              "y": 28,
+              "w": 8,
+              "h": 7
+            }
+          ]
+        },
+        {
+          "id": "s5b2",
+          "say": "By repeatedly dividing the search interval in half, binary search quickly finds the target value.",
+          "actions": []
+        },
+        {
+          "id": "s5b3",
+          "say": "This makes binary search a very efficient search algorithm for sorted lists.",
+          "actions": []
+        }
+      ]
+    }
+  ],
+  "quiz": [
+    {
+      "q": "What is the main idea behind binary search?",
+      "options": [
+        "To search the list from start to finish",
+        "To divide the search interval in half repeatedly",
+        "To search the list in reverse order",
+        "To use a random search"
+      ],
+      "answer": 1,
+      "why": "Binary search works by repeatedly dividing the search interval in half until the item is found."
+    },
+    {
+      "q": "What happens when the target value is compared to the middle element in binary search?",
+      "options": [
+        "The search interval is adjusted to include the entire list",
+        "The search interval is divided in half and the search continues in one of the halves",
+        "The search is stopped and the item is declared not found",
+        "The list is sorted again"
+      ],
+      "answer": 1,
+      "why": "In binary search, when the target value is compared to the middle element, the search interval is adjusted to include either the lower or upper half of the list."
+    },
+    {
+      "q": "What is the advantage of using binary search over a linear search?",
+      "options": [
+        "Binary search is slower than linear search",
+        "Binary search is less efficient than linear search",
+        "Binary search is more efficient than linear search for large lists",
+        "Binary search only works for small lists"
+      ],
+      "answer": 2,
+      "why": "Binary search is more efficient than linear search for large lists because it reduces the number of comparisons needed to find the target value."
+    }
+  ],
+  "source": "sample",
+  "model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+  "audio": "mp3",
+  "voiceTier": "premium"
+}

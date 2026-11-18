@@ -1,0 +1,38 @@
+{
+  "name": "chalkline-ai-whiteboard-tutor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chalkline: an AI whiteboard tutor that teaches any topic with narration synchronised to live whiteboard drawing.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build && concurrently -k -n api,web -c magenta,cyan \"wrangler dev --port 8790\" \"vite\"",
+    "build": "tsc --noEmit -p . && vite build",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "vitest run",
+    "preview": "vite build && wrangler dev --port 8790",
+    "deploy": "npm run build && wrangler deploy",
+    "samples": "node scripts/make-samples.mjs"
+  },
+  "dependencies": {
+    "@mlc-ai/web-llm": "0.2.87",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "roughjs": "^4.6.6"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261117.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "concurrently": "^10.0.7",
+    "playwright-core": "^1.65.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0",
+    "wrangler": "^4.164.0"
+  },
+  "allowScripts": {
+    "workerd@1.20261117.1": true,
+    "esbuild@0.28.2": true
+  }
+}

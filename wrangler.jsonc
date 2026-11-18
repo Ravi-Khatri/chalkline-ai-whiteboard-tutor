@@ -1,0 +1,30 @@
+﻿{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "chalkline-tutor",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  // The built React app is served as static assets; only /api/* runs the Worker.
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  // Workers AI binding. On the Workers Free plan, requests beyond the daily
+  // free allocation fail with an error; they are never billed.
+  "ai": { "binding": "AI", "remote": true },
+  "vars": {
+    "LESSON_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    // MeloTTS: ~40 units per lesson, so ~13 new lessons/day on the free plan.
+    // Set "@cf/deepgram/aura-2-en" for a more natural voice (~4,000 units per lesson).
+    "TTS_MODEL": "@cf/myshell-ai/melotts",
+    "TTS_VOICE": "athena",
+    // Only used with Aura-2: estimated units/day it may use before narration switches to MeloTTS.
+    "PREMIUM_BUDGET": "6500",
+    // New (uncached) lessons each visitor may create per day.
+    "FAIR_USE_LESSONS": "3"
+  },
+  // Free KV namespace for the topic/audio cache and the daily budget counter.
+  // Create it with: npx wrangler kv namespace create CACHE  (then paste the id here).
+  "kv_namespaces": [{ "binding": "CACHE", "id": "chalkline-cache-local" }],
+  "observability": { "enabled": true }
+}

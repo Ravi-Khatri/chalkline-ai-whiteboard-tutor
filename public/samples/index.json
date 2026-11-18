@@ -1,0 +1,20 @@
+[
+  {
+    "id": "binary-search",
+    "title": "Binary Search Explained",
+    "topic": "How binary search works",
+    "blurb": "Halve a sorted list until you find the target. Algorithms, worked example."
+  },
+  {
+    "id": "sky-blue",
+    "title": "Why the Sky is Blue",
+    "topic": "Why the sky is blue",
+    "blurb": "Sunlight, scattering and why sunsets turn red. Physics, intuition first."
+  },
+  {
+    "id": "compound-interest",
+    "title": "Understanding Compound Interest",
+    "topic": "How compound interest works",
+    "blurb": "Interest on interest, year by year, with real numbers. Personal finance."
+  }
+]
