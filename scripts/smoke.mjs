@@ -14,6 +14,7 @@ const browser = await chromium.launch({ channel: process.env.BROWSER ?? 'msedge'
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
+page.on('response', (r) => { if (r.status() >= 400) console.log(`  HTTP ${r.status()} ${r.url()}`); });
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 
 const check = (cond, msg) => {

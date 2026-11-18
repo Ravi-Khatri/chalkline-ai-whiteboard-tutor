@@ -1,8 +1,9 @@
-﻿# Chalkline: an AI whiteboard tutor
+# Chalkline: an AI whiteboard tutor
 
 Type a topic. Chalkline writes a short lesson, **talks you through it while drawing on a whiteboard in sync**, lets you **pause, rewind and jump** to any moment, and stops to **answer your questions about anything on the board**. It ends with a quick quiz, and if you get a question wrong, the tutor explains your specific mistake.
 
-- **Live demo:** `<add the workers.dev URL after deploying>`
+- **Live demo:** https://chalkline-tutor.ravi-khatri-studio.workers.dev
+- **Source:** https://github.com/Ravi-Khatri/chalkline-ai-whiteboard-tutor
 - **Stack:** React + TypeScript (Vite) · Cloudflare Workers · Workers AI (Llama 3.3 70B for text, MeloTTS for live voice; sample lessons pre-recorded with Deepgram Aura-2 "Athena") · rough.js for hand-drawn rendering
 - **Cost to run:** ₹0. Everything runs on the Cloudflare Workers Free plan.
 

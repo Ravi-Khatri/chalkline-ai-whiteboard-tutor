@@ -24,7 +24,7 @@
     "FAIR_USE_LESSONS": "3"
   },
   // Free KV namespace for the topic/audio cache and the daily budget counter.
-  // Create it with: npx wrangler kv namespace create CACHE  (then paste the id here).
-  "kv_namespaces": [{ "binding": "CACHE", "id": "chalkline-cache-local" }],
+  // Created with: npx wrangler kv namespace create CACHE  (the id names the namespace; it is not a secret).
+  "kv_namespaces": [{ "binding": "CACHE", "id": "564f1cd2f1f247e6ad0b23e76ab88258" }],
   "observability": { "enabled": true }
 }
